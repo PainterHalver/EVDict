@@ -11,25 +11,31 @@ import {
     TouchableNativeFeedback,
     View,
 } from 'react-native';
+import IoIcon from 'react-native-vector-icons/Ionicons';
 import { RootStackParamList } from '../../App';
+import { COLORS } from '../constants';
 import { useDatabase } from '../contexts/DatabaseContext';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 // Prop 1 là prop gần nhất, 2 là của parent
 type Props = StackScreenProps<RootStackParamList>;
 
 const Home = ({ navigation }: Props) => {
     const { db, getWord } = useDatabase();
+    const [query, setQuery] = React.useState<string>('');
 
-    // useEffect(() => {
-    //   (async () => {
-    //     try {
-    //       const result = await getWord('vague');
-    //       console.log('RESULT: ', result);
-    //     } catch (error) {
-    //       console.log('ERROR: ', error);
-    //     }
-    //   })();
-    // }, []);
+    const querySubmitHandler = async (query: string) => {
+        try {
+            const result = await getWord(query);
+            if (result) {
+                navigation.navigate('WordDetail', { word: result });
+            } else {
+                // TODO: Không tìm thấy từ thì chuyển sang dùng màn google translate
+            }
+        } catch (error) {
+            console.log('ERROR: ', error);
+        }
+    };
 
     return (
         <View style={styles.containerWrapper}>
@@ -41,7 +47,7 @@ const Home = ({ navigation }: Props) => {
             />
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <View style={{ paddingVertical: 20, backgroundColor: 'red' }}>
+                    <View style={{ paddingVertical: 20 }}>
                         <Text
                             style={{
                                 alignSelf: 'center',
@@ -63,11 +69,29 @@ const Home = ({ navigation }: Props) => {
                                 alignItems: 'center',
                                 gap: 5,
                             }}>
-                            <Text>Icon</Text>
-                            <TextInput
-                                style={{ fontSize: 17 }}
-                                placeholder="Nhập từ khóa tìm kiếm"
+                            <IoIcon
+                                name="md-search-sharp"
+                                size={25}
+                                color={COLORS.TEXT_GRAY}
                             />
+                            <TextInput
+                                style={{ fontSize: 17, flex: 1 }}
+                                placeholder="Nhập từ khóa tìm kiếm"
+                                value={query}
+                                onChangeText={setQuery}
+                                onSubmitEditing={event => {
+                                    querySubmitHandler(event.nativeEvent.text);
+                                }}
+                                autoCapitalize="none"
+                            />
+                            {query.length > 0 && (
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setQuery('');
+                                    }}>
+                                    <IoIcon name="close" size={30} color={COLORS.TEXT_GRAY} />
+                                </TouchableOpacity>
+                            )}
                         </View>
                     </View>
                 </View>
@@ -148,16 +172,16 @@ const styles = StyleSheet.create({
     },
     header: {
         height: 180,
-        backgroundColor: 'blue',
+        backgroundColor: COLORS.BACKGROUND_PRIMARY,
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     bodyContainer: {
         flex: 1,
-        backgroundColor: '#123654',
+        // backgroundColor: '#123654',
         paddingTop: 10,
     },
     function: {
-        backgroundColor: 'yellow',
+        // backgroundColor: 'yellow',
         paddingHorizontal: 15,
         paddingVertical: 10,
     },
@@ -169,7 +193,7 @@ const styles = StyleSheet.create({
         gap: 5,
     },
     dailyWordContainer: {
-        backgroundColor: 'green',
+        // backgroundColor: 'green',
         paddingVertical: 10,
         paddingHorizontal: 15,
     },

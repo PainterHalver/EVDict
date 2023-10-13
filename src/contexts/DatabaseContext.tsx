@@ -37,7 +37,7 @@ export const DatabaseProvider = ({ children }: any) => {
                 async (resolve, reject) => {
                     await db.transaction((tx: any) => {
                         tx.executeSql(
-                            `SELECT * FROM av WHERE word = ?`,
+                            `SELECT * FROM av WHERE word = ? LIMIT 1`,
                             [word],
                             (_: any, rs: any) => {
                                 if (rs.rows.length > 0) {

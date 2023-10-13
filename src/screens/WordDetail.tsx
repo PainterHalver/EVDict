@@ -33,20 +33,7 @@ type Props = StackScreenProps<RootStackParamList>;
 
 const WordDetail = ({ navigation, route }: Props) => {
     const { db, getWord } = useDatabase();
-    const [word, setWord] = React.useState<Word | undefined>(undefined);
-
-    useEffect(() => {
-        (async () => {
-            try {
-                const result = await getWord('antimech');
-                if (result) {
-                    setWord(result);
-                }
-            } catch (error) {
-                console.log('ERROR: ', error);
-            }
-        })();
-    }, []);
+    const word = route.params?.word;
 
     const speakUk = async () => {
         if (!word) return;
@@ -80,7 +67,7 @@ const WordDetail = ({ navigation, route }: Props) => {
                             marginVertical: 10,
                             gap: 10,
                         }}>
-                        <TouchableOpacity onPress={() => { }}>
+                        <TouchableOpacity onPress={() => navigation.goBack()}>
                             <IoIcon
                                 name="arrow-back-outline"
                                 size={25}
