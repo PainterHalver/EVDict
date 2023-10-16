@@ -1,45 +1,36 @@
-import {
-    Text,
-    StyleSheet,
-    View,
-    TouchableNativeFeedback,
-    ScrollView,
-} from 'react-native';
+import {Text, StyleSheet, View, TouchableNativeFeedback, ScrollView} from 'react-native';
 import React from 'react';
-import { Word } from '../../types';
-import { COLORS } from '../../constants';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '../../../App';
+import {Word} from '../../types';
+import {COLORS} from '../../constants';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../../../App';
 
 interface Props {
     searchSuggestions: Word[];
 }
 
-const SearchSuggestion = ({ searchSuggestions }: Props) => {
+const SearchSuggestion = ({searchSuggestions}: Props) => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} keyboardShouldPersistTaps="always">
             {searchSuggestions.length > 0 &&
                 searchSuggestions.map((item, index) => {
                     return (
                         <TouchableNativeFeedback
                             key={item.word}
                             onPress={() => {
-                                navigation.navigate('WordDetail', { word: item });
+                                navigation.navigate('WordDetail', {word: item});
                             }}>
                             <View
                                 style={{
                                     paddingHorizontal: 15,
                                     paddingVertical: 10,
                                     borderBottomColor: '#00000044',
-                                    borderBottomWidth:
-                                        index === searchSuggestions.length - 1 ? 0 : 1,
+                                    borderBottomWidth: index === searchSuggestions.length - 1 ? 0 : 0.7,
                                     flexDirection: 'row',
                                 }}>
-                                <Text style={{ color: COLORS.TEXT_WHITE, fontSize: 16 }}>
-                                    {item.word}
-                                </Text>
+                                <Text style={{color: COLORS.TEXT_WHITE, fontSize: 16}}>{item.word}</Text>
                             </View>
                         </TouchableNativeFeedback>
                     );
@@ -57,6 +48,7 @@ const styles = StyleSheet.create({
         right: 25,
         top: -10,
         zIndex: 100,
+        maxHeight: 300,
     },
 });
 

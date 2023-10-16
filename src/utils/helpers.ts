@@ -6,3 +6,12 @@ export const populateHtml = (html: string) => {
         .replace(/<d3>/g, '</div></div></div>')
         .replace(/<s2>/g, '</span></span>');
 };
+
+export const filterBadChars = (word: string) => {
+    const badChars = ['\\', '/', ':', '*', '?', '"', '>', '<', '|', ';', ',', '.'];
+    word = word
+        .split('')
+        .filter(char => !badChars.includes(char))
+        .join('');
+    return word.replace(/-/g, ' ').replace(/_/g, ' ').trim();
+};

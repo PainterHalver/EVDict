@@ -1,5 +1,5 @@
-import { StackScreenProps } from '@react-navigation/stack';
-import React, { useEffect } from 'react';
+import {StackScreenProps} from '@react-navigation/stack';
+import React, {useEffect} from 'react';
 import {
     Button,
     Platform,
@@ -12,18 +12,18 @@ import {
     View,
 } from 'react-native';
 import IoIcon from 'react-native-vector-icons/Ionicons';
-import { RootStackParamList } from '../../../App';
-import { COLORS } from '../../constants';
-import { useDatabase } from '../../contexts/DatabaseContext';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Word } from '../../types';
+import {RootStackParamList} from '../../../App';
+import {COLORS} from '../../constants';
+import {useDatabase} from '../../contexts/DatabaseContext';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Word} from '../../types';
 import SearchSuggestion from './SearchSuggestion';
 
 // Prop 1 là prop gần nhất, 2 là của parent
 type Props = StackScreenProps<RootStackParamList>;
 
-const Home = ({ navigation }: Props) => {
-    const { db, getWord, getWordsStartsWith } = useDatabase();
+const Home = ({navigation}: Props) => {
+    const {db, getWord, getWordsStartsWith} = useDatabase();
     const [query, setQuery] = React.useState<string>('');
     const [searchSuggestions, setSearchSuggestions] = React.useState<Word[]>([]);
 
@@ -31,7 +31,7 @@ const Home = ({ navigation }: Props) => {
         try {
             const result = await getWord(query);
             if (result) {
-                navigation.navigate('WordDetail', { word: result });
+                navigation.navigate('WordDetail', {word: result});
             } else {
                 // TODO: Không tìm thấy từ thì chuyển sang dùng màn google translate
             }
@@ -46,7 +46,7 @@ const Home = ({ navigation }: Props) => {
         }
 
         const timeout = setTimeout(async () => {
-            const result = await getWordsStartsWith(query);
+            const result = await getWordsStartsWith(query, 20);
 
             if (result) {
                 setSearchSuggestions(result);
@@ -60,15 +60,10 @@ const Home = ({ navigation }: Props) => {
 
     return (
         <View style={styles.containerWrapper}>
-            <StatusBar
-                translucent
-                barStyle={'light-content'}
-                backgroundColor={'transparent'}
-                animated={true}
-            />
+            <StatusBar translucent barStyle={'light-content'} backgroundColor={'transparent'} animated={true} />
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <View style={{ paddingVertical: 20 }}>
+                    <View style={{paddingVertical: 20}}>
                         <Text
                             style={{
                                 alignSelf: 'center',
@@ -91,13 +86,9 @@ const Home = ({ navigation }: Props) => {
                                 gap: 5,
                                 position: 'relative',
                             }}>
-                            <IoIcon
-                                name="md-search-sharp"
-                                size={25}
-                                color={COLORS.TEXT_GRAY}
-                            />
+                            <IoIcon name="md-search-sharp" size={25} color={COLORS.TEXT_GRAY} />
                             <TextInput
-                                style={{ fontSize: 17, flex: 1 }}
+                                style={{fontSize: 17, flex: 1}}
                                 placeholder="Nhập từ khóa tìm kiếm"
                                 value={query}
                                 onChangeText={setQuery}
@@ -167,13 +158,8 @@ const Home = ({ navigation }: Props) => {
                                     borderRadius: 10,
                                     alignItems: 'center',
                                 }}>
-                                <Text style={{ fontSize: 20, fontWeight: '500' }}>
-                                    Từ của ngày hôm nay
-                                </Text>
-                                <Text
-                                    style={{ marginVertical: 20, fontSize: 18, fontWeight: '400' }}>
-                                    Challenge
-                                </Text>
+                                <Text style={{fontSize: 20, fontWeight: '500'}}>Từ của ngày hôm nay</Text>
+                                <Text style={{marginVertical: 20, fontSize: 18, fontWeight: '400'}}>Challenge</Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>

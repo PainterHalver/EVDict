@@ -52,7 +52,7 @@ export default `
   text-decoration: underline;
 }
 .m {
-  background-image: url('arrow.png');
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAQCAYAAADJViUEAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAFeSURBVHjanJO/S0JxFMWvVgaJiAiJg5ORNEVJQ1CzkEhEk0NDw8NCGiSEaI9oSRMKoiGFQqj+izeFD8R6hDwiJESyCCTe+77vdzpNiqX9eA5nuvdzuZx7LgGgQUUyKT3SqC6VSF3tV2vrR9gI4JjNY79C2uYg8JEZwYgZwU6FtF3LsEwKcQl2cwUbD1Q7kEmx94VLpEbv6TGj0lO2Ss85Noe9rkYbX0Nco/qJTIrjC8wl2A0PLkQak1zChEgiyCU4vm/D17FUo9e8TIqzA7MwHIYbh7852xmQwOILfZwPBOtOjBkuFFkYQx1YdyL7D9jToFaRJ7DYbZiNzSDzRqzQJL3QoFa+TNVoN1imqv+d+LVIYrbHbS5h2IzBa8bgFVvwGT6ctptKpAZ1wo1IIWTpzrd0N224cCXSCFgKSZP0BcOPS7GNcUsJYyHk2BTORApuy9nmcbjMZYz+9VWfAwDfld0rPuQW5AAAAABJRU5ErkJggg==');
   background-position: left 4px;
   background-repeat: no-repeat;
   color: #cc33ff;
@@ -78,7 +78,7 @@ a[class='black'] {
   text-decoration: none;
 }
 .id {
-  background-image: url('arrow_right.png');
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAACDSURBVHjapNPbCYAwDAXQknaxonuItyC4hYPZOIzgGI1fgo9abCzk8x5ImhiHpSXwZsGDKTwRyZYhxInAQuBEfRz/AEXkK/CK1ABZpBZ4IBrggmgBIXBygZt/AGavbsEGhnqIR1j1jedw9SLdw1WrnAt/Pqa3cBFwmD2BVxuWTnPO+wBqAOnBccQRxQAAAABJRU5ErkJggg==');
   background-position: left 0px top 8px;
   background-repeat: no-repeat;
   margin-left: 10px;
@@ -87,7 +87,7 @@ a[class='black'] {
   background-size: 9px 9px;
 }
 .im {
-  background-image: url('arrow_right.png');
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAACDSURBVHjapNPbCYAwDAXQknaxonuItyC4hYPZOIzgGI1fgo9abCzk8x5ImhiHpSXwZsGDKTwRyZYhxInAQuBEfRz/AEXkK/CK1ABZpBZ4IBrggmgBIXBygZt/AGavbsEGhnqIR1j1jedw9SLdw1WrnAt/Pqa3cBFwmD2BVxuWTnPO+wBqAOnBccQRxQAAAABJRU5ErkJggg==');
   background-position: left 0px top 8px;
   background-repeat: no-repeat;
   margin-left: 20px;

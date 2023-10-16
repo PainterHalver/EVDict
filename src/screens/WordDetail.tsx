@@ -1,7 +1,7 @@
 // @refresh reset
 
-import { StackScreenProps } from '@react-navigation/stack';
-import React, { useEffect } from 'react';
+import {StackScreenProps} from '@react-navigation/stack';
+import React, {useEffect} from 'react';
 import {
     Button,
     Platform,
@@ -15,24 +15,24 @@ import {
     TouchableHighlight,
     TouchableOpacity,
 } from 'react-native';
-import { RootStackParamList } from '../../App';
-import { useDatabase } from '../contexts/DatabaseContext';
-import { Word } from '../types';
-import { WebView } from 'react-native-webview';
-import { createMarkup } from '../utils/markup';
+import {RootStackParamList} from '../../App';
+import {useDatabase} from '../contexts/DatabaseContext';
+import {Word} from '../types';
+import {WebView} from 'react-native-webview';
+import {createMarkup} from '../utils/markup';
 import Tts from 'react-native-tts';
 import IoIcon from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import { COLORS } from '../constants';
-import { LogBox } from 'react-native';
+import {COLORS} from '../constants';
+import {LogBox} from 'react-native';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 // Prop 1 là prop gần nhất, 2 là của parent
 type Props = StackScreenProps<RootStackParamList>;
 
-const WordDetail = ({ navigation, route }: Props) => {
-    const { db, getWord } = useDatabase();
+const WordDetail = ({navigation, route}: Props) => {
+    const {db, getWord} = useDatabase();
     const word = route.params?.word;
 
     const speakUk = async () => {
@@ -51,12 +51,7 @@ const WordDetail = ({ navigation, route }: Props) => {
 
     return (
         <View style={styles.containerWrapper}>
-            <StatusBar
-                translucent
-                barStyle={'light-content'}
-                backgroundColor={'transparent'}
-                animated={true}
-            />
+            <StatusBar translucent barStyle={'light-content'} backgroundColor={'transparent'} animated={true} />
             <View style={styles.container}>
                 <View style={styles.header}>
                     <View
@@ -68,11 +63,7 @@ const WordDetail = ({ navigation, route }: Props) => {
                             gap: 10,
                         }}>
                         <TouchableOpacity onPress={() => navigation.goBack()}>
-                            <IoIcon
-                                name="arrow-back-outline"
-                                size={25}
-                                color={COLORS.TEXT_WHITE}
-                            />
+                            <IoIcon name="arrow-back-outline" size={25} color={COLORS.TEXT_WHITE} />
                         </TouchableOpacity>
                         <Text
                             style={{
@@ -92,26 +83,26 @@ const WordDetail = ({ navigation, route }: Props) => {
                     </View>
 
                     <View style={styles.speakers}>
-                        <TouchableOpacity
-                            style={{ flexDirection: 'row', alignItems: 'center' }}
-                            onPress={speakUk}>
-                            <Text style={{ color: COLORS.TEXT_GRAY, fontSize: 16 }}>
-                                🔊 &nbsp; UK
-                            </Text>
+                        <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={speakUk}>
+                            <Text style={{color: COLORS.TEXT_GRAY, fontSize: 16}}>🔊 &nbsp; UK</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            style={{ flexDirection: 'row', alignItems: 'center' }}
-                            onPress={speakUs}>
-                            <Text style={{ color: COLORS.TEXT_GRAY, fontSize: 16 }}>
-                                🔊 &nbsp; US
-                            </Text>
+                        <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={speakUs}>
+                            <Text style={{color: COLORS.TEXT_GRAY, fontSize: 16}}>🔊 &nbsp; US</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={{ flex: 1, zIndex: -1 }}>
+                <View style={{flex: 1, zIndex: -1}}>
                     <WebView
                         originWhitelist={['*']}
-                        source={{ html: createMarkup(word) }}
+                        source={{html: createMarkup(word)}}
+                        onMessage={async event => {
+                            const {data} = event.nativeEvent;
+                            if (data === word?.word) return;
+                            const newWord = await getWord(data);
+                            if (newWord) {
+                                navigation.push('WordDetail', {word: newWord});
+                            }
+                        }}
                     />
                 </View>
             </View>
