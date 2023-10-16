@@ -12,17 +12,20 @@ import {
     View,
 } from 'react-native';
 import IoIcon from 'react-native-vector-icons/Ionicons';
-import { RootStackParamList } from '../../App';
-import { COLORS } from '../constants';
-import { useDatabase } from '../contexts/DatabaseContext';
+import { RootStackParamList } from '../../../App';
+import { COLORS } from '../../constants';
+import { useDatabase } from '../../contexts/DatabaseContext';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Word } from '../../types';
+import SearchSuggestion from './SearchSuggestion';
 
 // Prop 1 là prop gần nhất, 2 là của parent
 type Props = StackScreenProps<RootStackParamList>;
 
 const Home = ({ navigation }: Props) => {
-    const { db, getWord } = useDatabase();
+    const { db, getWord, getWordsStartsWith } = useDatabase();
     const [query, setQuery] = React.useState<string>('');
+    const [searchSuggestions, setSearchSuggestions] = React.useState<Word[]>([]);
 
     const querySubmitHandler = async (query: string) => {
         try {
@@ -36,6 +39,24 @@ const Home = ({ navigation }: Props) => {
             console.log('ERROR: ', error);
         }
     };
+
+    useEffect(() => {
+        if (query.length === 0) {
+            return setSearchSuggestions([]);
+        }
+
+        const timeout = setTimeout(async () => {
+            const result = await getWordsStartsWith(query);
+
+            if (result) {
+                setSearchSuggestions(result);
+            }
+        }, 0);
+
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [query]);
 
     return (
         <View style={styles.containerWrapper}>
@@ -68,6 +89,7 @@ const Home = ({ navigation }: Props) => {
                                 borderRadius: 100,
                                 alignItems: 'center',
                                 gap: 5,
+                                position: 'relative',
                             }}>
                             <IoIcon
                                 name="md-search-sharp"
@@ -155,6 +177,7 @@ const Home = ({ navigation }: Props) => {
                             </View>
                         </TouchableNativeFeedback>
                     </View>
+                    <SearchSuggestion searchSuggestions={searchSuggestions} />
                 </View>
             </View>
         </View>
