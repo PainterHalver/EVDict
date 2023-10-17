@@ -39,6 +39,7 @@ export const DatabaseProvider = ({children}: any) => {
     const getWord = async (word: string): Promise<Word | undefined> => {
         try {
             word = filterBadChars(word);
+            console.log(word);
             const result = await new Promise<Word | undefined>(async (resolve, reject) => {
                 await db.transaction(tx => {
                     tx.executeSql(

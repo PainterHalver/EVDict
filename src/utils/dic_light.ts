@@ -10,6 +10,14 @@ export default `
   margin: 0;
   background-color: #f9f9f9;
 }
+body {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 .m5t {
   font-weight: normal;
   margin-top: 15px;

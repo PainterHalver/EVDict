@@ -1,20 +1,16 @@
 module.exports = function (api) {
-  const isProduction = api.env('production');
+    const isProduction = api.env('production');
 
-  const presets = [
-    'module:metro-react-native-babel-preset'
-  ];
+    const presets = ['module:metro-react-native-babel-preset'];
 
-  const plugins = [
+    const plugins = ['react-native-reanimated/plugin'];
 
-  ];
+    if (isProduction) {
+        plugins.push('transform-remove-console');
+    }
 
-  if (isProduction) {
-    plugins.push('transform-remove-console');
-  }
-
-  return {
-    presets,
-    plugins,
-  };
+    return {
+        presets,
+        plugins,
+    };
 };

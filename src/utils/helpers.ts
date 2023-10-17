@@ -13,5 +13,9 @@ export const filterBadChars = (word: string) => {
         .split('')
         .filter(char => !badChars.includes(char))
         .join('');
-    return word.replace(/-/g, ' ').replace(/_/g, ' ').trim();
+    // replace - chỉ khi không phải là ký tự cuối (path-)
+    return word
+        .replace(/-(?=[a-zA-Z0-9]+($|\s))/g, ' ')
+        .replace(/_/g, ' ')
+        .trim();
 };

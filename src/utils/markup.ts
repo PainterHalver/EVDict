@@ -1,7 +1,7 @@
 import {Word} from '../types';
 import cssText from './dic_light';
 
-export const createMarkup = (word: Word | undefined) => {
+export const createMarkup = (word: Word | undefined, avHtml: string) => {
     if (!word) {
         return '';
     }
@@ -37,7 +37,7 @@ export const createMarkup = (word: Word | undefined) => {
         </head>
         <body>
             <div>
-                ${word.av || emptyAvMarkup}
+                ${avHtml || emptyAvMarkup}
             </div>
             <script>
                 const anchors = document.getElementsByTagName('a');
