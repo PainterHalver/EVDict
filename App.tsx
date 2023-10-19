@@ -7,10 +7,13 @@ import {DatabaseProvider} from './src/contexts/DatabaseContext';
 import Home from './src/screens/Home';
 import WordDetail from './src/screens/WordDetail';
 import {Word} from './src/types';
+import {LoadingModalProvider} from './src/contexts/LoadingModalContext';
+import TranslateText from './src/screens/TranslateText';
 
 export type RootStackParamList = {
     Home: undefined;
     WordDetail: {word: Word};
+    TranslateText: {text?: string};
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -19,19 +22,27 @@ function App(): JSX.Element {
     return (
         <SafeAreaProvider>
             <DatabaseProvider>
-                <NavigationContainer>
-                    <Stack.Navigator>
-                        <Stack.Screen name="Home" component={Home} options={{headerShown: false}} />
-                        <Stack.Screen
-                            name="WordDetail"
-                            component={WordDetail}
-                            options={{
-                                headerShown: false,
-                                ...TransitionPresets.SlideFromRightIOS,
-                            }}
-                        />
-                    </Stack.Navigator>
-                </NavigationContainer>
+                <LoadingModalProvider>
+                    <NavigationContainer>
+                        <Stack.Navigator screenOptions={{headerShown: false}}>
+                            <Stack.Screen name="Home" component={Home} />
+                            <Stack.Screen
+                                name="WordDetail"
+                                component={WordDetail}
+                                options={{
+                                    ...TransitionPresets.SlideFromRightIOS,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="TranslateText"
+                                component={TranslateText}
+                                options={{
+                                    ...TransitionPresets.SlideFromRightIOS,
+                                }}
+                            />
+                        </Stack.Navigator>
+                    </NavigationContainer>
+                </LoadingModalProvider>
             </DatabaseProvider>
         </SafeAreaProvider>
     );

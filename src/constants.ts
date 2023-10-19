@@ -1,7 +1,10 @@
 export const COLORS = {
     TEXT_WHITE: '#ffffff',
-    TEXT_GRAY: '#505050',
+    TEXT_GRAY: '#808080',
+    TEXT_BLACK: '#000000',
 
     BACKGROUND_PRIMARY: '#9dc896',
     BACKGROUND_PRIMARY_DARK: '#7a9c6f',
+    BACKGROUND_WHITE: '#f9f9f9',
+    BACKGROUND_WHITE_DARK: '#e6e6e6',
 };

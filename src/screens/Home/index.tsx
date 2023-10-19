@@ -20,7 +20,7 @@ import {Word} from '../../types';
 import SearchSuggestion from './SearchSuggestion';
 
 // Prop 1 là prop gần nhất, 2 là của parent
-type Props = StackScreenProps<RootStackParamList>;
+type Props = StackScreenProps<RootStackParamList, 'Home'>;
 
 const Home = ({navigation}: Props) => {
     const {db, getWord, getWordsStartsWith} = useDatabase();
@@ -96,6 +96,7 @@ const Home = ({navigation}: Props) => {
                                     querySubmitHandler(event.nativeEvent.text);
                                 }}
                                 autoCapitalize="none"
+                                cursorColor={COLORS.BACKGROUND_PRIMARY_DARK}
                             />
                             {query.length > 0 && (
                                 <TouchableOpacity
@@ -110,10 +111,13 @@ const Home = ({navigation}: Props) => {
                 </View>
                 <View style={styles.bodyContainer}>
                     <View style={styles.function}>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback
+                            onPress={() => {
+                                navigation.navigate('TranslateText', {});
+                            }}>
                             <View style={styles.functionButton}>
                                 <Text>Icon</Text>
-                                <Text>Function Name</Text>
+                                <Text style={styles.functionName}>Dịch văn bản</Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>
@@ -121,7 +125,7 @@ const Home = ({navigation}: Props) => {
                         <TouchableNativeFeedback>
                             <View style={styles.functionButton}>
                                 <Text>Icon</Text>
-                                <Text>Function Name</Text>
+                                <Text style={styles.functionName}>Function Name</Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>
@@ -129,7 +133,7 @@ const Home = ({navigation}: Props) => {
                         <TouchableNativeFeedback>
                             <View style={styles.functionButton}>
                                 <Text>Icon</Text>
-                                <Text>Function Name</Text>
+                                <Text style={styles.functionName}>Function Name</Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>
@@ -137,7 +141,7 @@ const Home = ({navigation}: Props) => {
                         <TouchableNativeFeedback>
                             <View style={styles.functionButton}>
                                 <Text>Icon</Text>
-                                <Text>Function Name</Text>
+                                <Text style={styles.functionName}>Function Name</Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>
@@ -145,7 +149,7 @@ const Home = ({navigation}: Props) => {
                         <TouchableNativeFeedback>
                             <View style={styles.functionButton}>
                                 <Text>Icon</Text>
-                                <Text>Function Name</Text>
+                                <Text style={styles.functionName}>Function Name</Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>
@@ -175,6 +179,7 @@ export default Home;
 const styles = StyleSheet.create({
     containerWrapper: {
         flex: 1,
+        backgroundColor: COLORS.BACKGROUND_WHITE_DARK,
     },
     container: {
         flex: 1,
@@ -198,8 +203,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: 'cyan',
         padding: 15,
-        borderRadius: 10,
-        gap: 5,
+        borderRadius: 7,
+        gap: 10,
+        alignItems: 'center',
+    },
+    functionName: {
+        fontSize: 18,
+        fontWeight: '400',
     },
     dailyWordContainer: {
         // backgroundColor: 'green',
