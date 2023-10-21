@@ -2,7 +2,17 @@
 
 import {StackScreenProps} from '@react-navigation/stack';
 import React from 'react';
-import {Dimensions, LogBox, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+    Dimensions,
+    LogBox,
+    Platform,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableHighlight,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 import AutoHeightWebView from 'react-native-autoheight-webview';
 import {PanGestureHandler, ScrollView} from 'react-native-gesture-handler';
 import Animated, {
@@ -166,12 +176,40 @@ const WordDetail = ({navigation, route}: Props) => {
                     </View>
 
                     <View style={styles.speakers}>
-                        <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={speakUk}>
-                            <Text style={{color: COLORS.TEXT_GRAY, fontSize: 16}}>🔊 &nbsp; UK</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={speakUs}>
-                            <Text style={{color: COLORS.TEXT_GRAY, fontSize: 16}}>🔊 &nbsp; US</Text>
-                        </TouchableOpacity>
+                        <View style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
+                            <TouchableHighlight
+                                hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+                                underlayColor={COLORS.BACKGROUND_PRIMARY_DARK}
+                                onPress={speakUk}
+                                style={{
+                                    backgroundColor: COLORS.BACKGROUND_PRIMARY,
+                                    borderRadius: 20,
+                                    height: 25,
+                                    width: 25,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}>
+                                <IoIcon name="volume-high" size={15} color={COLORS.TEXT_WHITE} />
+                            </TouchableHighlight>
+                            <Text style={{color: COLORS.TEXT_GRAY, fontSize: 16}}>UK</Text>
+                        </View>
+                        <View style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
+                            <TouchableHighlight
+                                hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+                                underlayColor={COLORS.BACKGROUND_PRIMARY_DARK}
+                                onPress={speakUs}
+                                style={{
+                                    backgroundColor: COLORS.BACKGROUND_PRIMARY,
+                                    borderRadius: 20,
+                                    height: 25,
+                                    width: 25,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}>
+                                <IoIcon name="volume-high" size={15} color={COLORS.TEXT_WHITE} />
+                            </TouchableHighlight>
+                            <Text style={{color: COLORS.TEXT_GRAY, fontSize: 16}}>US</Text>
+                        </View>
                     </View>
 
                     {/* Tabbar */}

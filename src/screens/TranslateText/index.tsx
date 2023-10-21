@@ -74,6 +74,7 @@ const TranslateText = ({navigation, route}: Props) => {
 
     const enToVi = async () => {
         try {
+            if (!text) return;
             setLoading(true);
             setFromTo(['en', 'vi']);
             const url = 'https://clients4.google.com/translate_a/t?&client=dict-chrome-ex&sl=en&tl=vi&tbb=1&q=';
@@ -91,6 +92,7 @@ const TranslateText = ({navigation, route}: Props) => {
 
     const viToEn = async () => {
         try {
+            if (!text) return;
             setLoading(true);
             setFromTo(['vi', 'en']);
             const url = 'https://clients4.google.com/translate_a/t?&client=dict-chrome-ex&sl=vi&tl=en&tbb=1&q=';
@@ -139,37 +141,47 @@ const TranslateText = ({navigation, route}: Props) => {
                 </View>
 
                 <ScrollView contentContainerStyle={styles.bodyContainer}>
-                    <View
+                    <Shadow
+                        sides={{bottom: true, top: false, end: false, start: false}}
                         style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
+                            borderRadius: 200,
                             backgroundColor: COLORS.BACKGROUND_WHITE,
-                            borderRadius: 20,
-                            paddingVertical: 10,
                             marginVertical: 10,
-                        }}>
-                        <Text style={{color: COLORS.TEXT_BLACK, fontSize: 16, flex: 1, textAlign: 'center'}}>
-                            {MAP[fromTo[0]]}
-                        </Text>
+                        }}
+                        stretch
+                        distance={0}
+                        offset={[0, 11.5]}>
                         <View
                             style={{
-                                backgroundColor: COLORS.BACKGROUND_PRIMARY,
-                                position: 'absolute',
-                                borderRadius: 200,
-                                height: 60,
-                                width: 60,
+                                flexDirection: 'row',
                                 alignItems: 'center',
-                                justifyContent: 'center',
-                                left: '50%',
-                                transform: [{translateX: -30}],
+                                justifyContent: 'space-between',
+                                backgroundColor: COLORS.BACKGROUND_WHITE,
+                                borderRadius: 20,
+                                paddingVertical: 10,
                             }}>
-                            <OctIcon name="arrow-switch" size={25} color={COLORS.TEXT_WHITE} />
+                            <Text style={{color: COLORS.TEXT_BLACK, fontSize: 16, flex: 1, textAlign: 'center'}}>
+                                {MAP[fromTo[0]]}
+                            </Text>
+                            <View
+                                style={{
+                                    backgroundColor: COLORS.BACKGROUND_PRIMARY,
+                                    position: 'absolute',
+                                    borderRadius: 200,
+                                    height: 60,
+                                    width: 60,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    left: '50%',
+                                    transform: [{translateX: -30}],
+                                }}>
+                                <OctIcon name="arrow-switch" size={25} color={COLORS.TEXT_WHITE} />
+                            </View>
+                            <Text style={{color: COLORS.TEXT_BLACK, fontSize: 16, flex: 1, textAlign: 'center'}}>
+                                {MAP[fromTo[1]]}
+                            </Text>
                         </View>
-                        <Text style={{color: COLORS.TEXT_BLACK, fontSize: 16, flex: 1, textAlign: 'center'}}>
-                            {MAP[fromTo[1]]}
-                        </Text>
-                    </View>
+                    </Shadow>
 
                     <Card style={{padding: 10}}>
                         <View style={{flexDirection: 'row', gap: 5, alignItems: 'center'}}>

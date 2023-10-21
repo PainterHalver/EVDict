@@ -3,6 +3,7 @@ import React, {useEffect} from 'react';
 import {
     Button,
     Platform,
+    ScrollView,
     StatusBar,
     StyleSheet,
     Switch,
@@ -12,6 +13,7 @@ import {
     View,
 } from 'react-native';
 import IoIcon from 'react-native-vector-icons/Ionicons';
+import FontawesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {RootStackParamList} from '../../../App';
 import {COLORS} from '../../constants';
 import {useDatabase} from '../../contexts/DatabaseContext';
@@ -63,7 +65,15 @@ const Home = ({navigation}: Props) => {
             <StatusBar translucent barStyle={'light-content'} backgroundColor={'transparent'} animated={true} />
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <View style={{paddingVertical: 20}}>
+                    <View
+                        style={{
+                            paddingVertical: 20,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 10,
+                        }}>
+                        <FontawesomeIcon name="book" size={30} color={COLORS.TEXT_WHITE} />
                         <Text
                             style={{
                                 alignSelf: 'center',
@@ -109,7 +119,8 @@ const Home = ({navigation}: Props) => {
                         </View>
                     </View>
                 </View>
-                <View style={styles.bodyContainer}>
+
+                <ScrollView style={styles.bodyContainer}>
                     <View style={styles.function}>
                         <TouchableNativeFeedback
                             onPress={() => {
@@ -168,7 +179,7 @@ const Home = ({navigation}: Props) => {
                         </TouchableNativeFeedback>
                     </View>
                     <SearchSuggestion searchSuggestions={searchSuggestions} />
-                </View>
+                </ScrollView>
             </View>
         </View>
     );
@@ -192,7 +203,7 @@ const styles = StyleSheet.create({
     bodyContainer: {
         flex: 1,
         // backgroundColor: '#123654',
-        paddingTop: 10,
+        paddingVertical: 10,
     },
     function: {
         // backgroundColor: 'yellow',
