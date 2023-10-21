@@ -1,0 +1,41 @@
+name: 'Publish APK'
+
+on:
+    push:
+        tags:
+            - 'v*'
+
+jobs:
+    build-and-publish-apk:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Setup Java JDK 17
+              uses: actions/setup-java@v3
+              with:
+                  distribution: 'temurin'
+                  java-version: '17.x'
+            - name: Install npm dependencies
+              run: npm install
+            - name: Make gradlew executable
+              run: chmod +x ./android/gradlew
+            - name: Build APK
+              run: cd ./android && ./gradlew assembleRelease
+            - name: Sign APK
+              uses: ilharp/sign-android-release@v1
+              id: sign_apk
+              with:
+                  releaseDir: android/app/build/outputs/apk/release
+                  signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
+                  keyAlias: alias_name
+                  keyStorePassword: 123456
+                  keyPassword: 123456
+                  buildToolsVersion: 33.0.0
+            - name: Rename to app-release.apk
+              run: mv ${{steps.sign_apk.outputs.signedFile}} app_release_${{github.ref_name}}.apk
+            - name: Publish release APK
+              uses: 'marvinpinto/action-automatic-releases@latest'
+              with:
+                  repo_token: '${{ secrets.GITHUB_TOKEN }}'
+                  prerelease: false
+                  files: app_release_${{github.ref_name}}.apk
