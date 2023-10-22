@@ -213,7 +213,7 @@ const TranslateText = ({navigation, route}: Props) => {
                             placeholder="Nhập văn bản cần dịch"
                             autoCapitalize="none"
                             blurOnSubmit
-                            cursorColor={COLORS.BACKGROUND_PRIMARY_DARK}
+                            cursorColor={COLORS.BACKGROUND_PRIMARY}
                             multiline
                             value={text}
                             onChangeText={setText}
@@ -290,7 +290,6 @@ const styles = StyleSheet.create({
     },
     bodyContainer: {
         flex: 1,
-        // backgroundColor: '#123654',
         paddingVertical: 10,
         paddingHorizontal: 10,
         gap: 7,

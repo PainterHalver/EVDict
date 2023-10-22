@@ -9,11 +9,13 @@ import WordDetail from './src/screens/WordDetail';
 import {Word} from './src/types';
 import {LoadingModalProvider} from './src/contexts/LoadingModalContext';
 import TranslateText from './src/screens/TranslateText';
+import History from './src/screens/History';
 
 export type RootStackParamList = {
     Home: undefined;
     WordDetail: {word: Word};
     TranslateText: {text?: string};
+    History: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -36,6 +38,13 @@ function App(): JSX.Element {
                             <Stack.Screen
                                 name="TranslateText"
                                 component={TranslateText}
+                                options={{
+                                    ...TransitionPresets.SlideFromRightIOS,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="History"
+                                component={History}
                                 options={{
                                     ...TransitionPresets.SlideFromRightIOS,
                                 }}

@@ -5,43 +5,52 @@ import {Word} from '../types';
 import {filterBadChars, populateHtml} from '../utils/helpers';
 
 export type DatabaseContextType = {
-    db: SQLite.SQLiteDatabase | null;
     getWord: (word: string) => Promise<Word | undefined>;
     getWordsStartsWith: (word: string, limit?: number) => Promise<Word[]>;
+    getHistory: () => Promise<Word[]>;
+    addHistoryWord: (word: Word) => Promise<void>;
 };
 
 // SQLite.DEBUG(true);
-// SQLite.enablePromise(true);
-const db = SQLite.openDatabase(
-    {
-        name: 'av',
-        createFromLocation: '~av_all_v3.db',
-    },
-    () => {
-        console.log('DB OPENED');
-    },
-    (error: any) => {
-        console.log('OPEN DB ERROR:', error);
-    },
-);
+SQLite.enablePromise(true);
 
 const DatabaseContext = createContext<DatabaseContextType>({
-    db: db,
-    getWord: async (word: string) => {
-        return {} as any;
-    },
-    getWordsStartsWith: async (word: string, limit?: number) => {
-        return [] as any;
-    },
+    getWord: 0 as any,
+    getWordsStartsWith: 0 as any,
+    getHistory: 0 as any,
+    addHistoryWord: 0 as any,
 });
 
 export const DatabaseProvider = ({children}: any) => {
+    const [dataDb, setDataDb] = useState<SQLite.SQLiteDatabase | null>(null);
+    const [appDb, setAppDb] = useState<SQLite.SQLiteDatabase | null>(null);
+
+    const createTables = async () => {
+        try {
+            if (!appDb) throw new Error('App database is not ready');
+
+            await appDb.executeSql(
+                `CREATE TABLE IF NOT EXISTS word_history (
+          word TEXT PRIMARY KEY NOT NULL,
+          mean TEXT NOT NULL,
+          av TEXT NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`,
+            );
+            console.log("CREATED TABLE 'word_history'");
+        } catch (error) {
+            console.log('CREATE TABLES ERROR: ', error);
+        }
+    };
+
     const getWord = async (word: string): Promise<Word | undefined> => {
         try {
+            if (!dataDb) throw new Error('Data database is not ready');
+
             word = filterBadChars(word);
             console.log(word);
             const result = await new Promise<Word | undefined>(async (resolve, reject) => {
-                await db.transaction(tx => {
+                await dataDb.transaction(tx => {
                     tx.executeSql(
                         `SELECT * FROM av WHERE word = ? LIMIT 1`,
                         [word],
@@ -73,8 +82,10 @@ export const DatabaseProvider = ({children}: any) => {
 
     const getWordsStartsWith = async (query: string, limit: number = 5): Promise<Word[]> => {
         try {
+            if (!dataDb) throw new Error('Data database is not ready');
+
             const result = await new Promise<Word[]>(async (resolve, reject) => {
-                await db.transaction(tx => {
+                await dataDb.transaction(tx => {
                     tx.executeSql(
                         `SELECT word, mean, av FROM av WHERE word LIKE ? ORDER BY word ASC LIMIT ?`,
                         [query + '%', limit],
@@ -106,7 +117,67 @@ export const DatabaseProvider = ({children}: any) => {
         }
     };
 
-    return <DatabaseContext.Provider value={{db, getWord, getWordsStartsWith}}>{children}</DatabaseContext.Provider>;
+    const getHistory = async (): Promise<Word[]> => {
+        try {
+            if (!appDb) throw new Error('App database is not ready');
+
+            const rs = await appDb.executeSql('SELECT * FROM word_history ORDER BY created_at DESC LIMIT 100');
+            const rows = rs[0].rows.raw();
+            return rows;
+        } catch (error) {
+            console.log('GET HISTORY:', error);
+            return [];
+        }
+    };
+
+    const addHistoryWord = async (word: Word): Promise<void> => {
+        try {
+            if (!appDb) throw new Error('App database is not ready');
+
+            await appDb.executeSql('INSERT OR REPLACE INTO word_history (word, mean, av) VALUES (?, ?, ?)', [
+                word.word,
+                word.mean,
+                word.av,
+            ]);
+        } catch (error) {
+            console.log('ADD HISTORY WORD:', error);
+        }
+    };
+
+    useEffect(() => {
+        (async () => {
+            try {
+                setDataDb(
+                    await SQLite.openDatabase({
+                        name: 'av.db',
+                        createFromLocation: '~av_all_v3.db',
+                    }),
+                );
+                setAppDb(
+                    await SQLite.openDatabase({
+                        name: 'app.db',
+                        location: 'default',
+                    }),
+                );
+            } catch (error) {
+                console.log('USE EFFECT:', error);
+            }
+        })();
+    }, []);
+
+    useEffect(() => {
+        (async () => {
+            if (appDb) {
+                await createTables();
+            }
+        })();
+    }, [appDb]);
+
+    return (
+        <DatabaseContext.Provider value={{getWord, getWordsStartsWith, addHistoryWord, getHistory}}>
+            {children}
+        </DatabaseContext.Provider>
+    );
 };
 
 export const useDatabase = () => useContext(DatabaseContext);
