@@ -5,9 +5,10 @@ import {COLORS} from '../constants';
 type CardProps = {
     children: any;
     style?: StyleProp<ViewStyle>;
+    containerStyle?: StyleProp<ViewStyle>;
 };
 
-const Card = ({children, style}: CardProps) => {
+const Card = ({children, style, containerStyle}: CardProps) => {
     return (
         <Shadow
             sides={{bottom: true, top: false, end: false, start: false}}
@@ -18,7 +19,8 @@ const Card = ({children, style}: CardProps) => {
             offset={[0, 1.5]}
             endColor="#00000020"
             paintInside
-            startColor="#00000020">
+            startColor="#00000020"
+            containerStyle={containerStyle}>
             <View style={style}>{children}</View>
         </Shadow>
     );

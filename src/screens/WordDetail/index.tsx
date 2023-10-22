@@ -72,10 +72,15 @@ const WordDetail = ({navigation, route}: Props) => {
     } else {
         for (let i = splittedAvHtml.length; i >= 0; i--) {
             // Nếu tab rỗng thì chỉ có dấu chấm => xóa
-            // TODO: Tạm thời bỏ tab Technical để không tràn chữ xuống dòng
-            if (!splittedAvHtml[i] || splittedAvHtml[i].startsWith('.') || i === 2) {
+            if (!splittedAvHtml[i] || splittedAvHtml[i].startsWith('.')) {
                 splittedAvHtml.splice(i, 1);
                 tabs.splice(i, 1);
+            }
+            // TODO: Tạm thời bỏ tab Technical để không tràn chữ xuống dòng nếu có cả 5 tab
+            // Vẫn oke hơn là lúc nào cũng bỏ :)
+            if (tabs.length === 5) {
+                tabs.splice(2, 1);
+                splittedAvHtml.splice(2, 1);
             }
         }
     }

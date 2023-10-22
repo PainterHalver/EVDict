@@ -134,6 +134,7 @@ export const DatabaseProvider = ({children}: any) => {
         try {
             if (!appDb) throw new Error('App database is not ready');
 
+            // Xóa dòng cũ đi nếu có và tạo dòng mới, tiện đỡ phải lọc trùng
             await appDb.executeSql('INSERT OR REPLACE INTO word_history (word, mean, av) VALUES (?, ?, ?)', [
                 word.word,
                 word.mean,
