@@ -97,7 +97,7 @@ const History = ({navigation, route}: Props) => {
 
                 <View style={styles.bodyContainer}>
                     <Card style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10}}>
-                        <IoIcon name="md-search-sharp" size={25} color={COLORS.TEXT_GRAY} />
+                        <IoIcon name="search" size={25} color={COLORS.TEXT_GRAY} />
                         <TextInput
                             style={{fontSize: 17, flex: 1}}
                             placeholder="Tìm kiếm"
@@ -133,6 +133,7 @@ const History = ({navigation, route}: Props) => {
                             marginBottom: 15,
                             borderRadius: 7,
                             backgroundColor: COLORS.BACKGROUND_WHITE,
+                            elevation: 1,
                         }}>
                         <ScrollView showsVerticalScrollIndicator={false}>
                             {filteredHistory.map((word, index) => {

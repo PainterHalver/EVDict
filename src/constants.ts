@@ -1,5 +1,6 @@
 export const COLORS = {
     TEXT_WHITE: '#ffffff',
+    TEXT_WHITE_BLUR: '#ffffff99',
     TEXT_GRAY: '#808080',
     TEXT_BLACK: '#000000',
 

@@ -1,6 +1,7 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useEffect} from 'react';
 import {
+    BackHandler,
     Button,
     Platform,
     ScrollView,
@@ -60,6 +61,22 @@ const Home = ({navigation}: Props) => {
         };
     }, [query]);
 
+    // FIXME: Đang ko hoạt động
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            if (query.length > 0 && searchSuggestions.length > 0) {
+                setQuery('');
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        return () => {
+            backHandler.remove();
+        };
+    }, []);
+
     return (
         <View style={styles.containerWrapper}>
             <StatusBar translucent barStyle={'light-content'} backgroundColor={'transparent'} animated={true} />
@@ -96,7 +113,7 @@ const Home = ({navigation}: Props) => {
                                 gap: 5,
                                 position: 'relative',
                             }}>
-                            <IoIcon name="md-search-sharp" size={25} color={COLORS.TEXT_GRAY} />
+                            <IoIcon name="search" size={25} color={COLORS.TEXT_GRAY} />
                             <TextInput
                                 style={{fontSize: 17, flex: 1}}
                                 placeholder="Nhập từ khóa tìm kiếm"
@@ -147,7 +164,7 @@ const Home = ({navigation}: Props) => {
                         <TouchableNativeFeedback>
                             <View style={styles.functionButton}>
                                 <Text>Icon</Text>
-                                <Text style={styles.functionName}>Function Name</Text>
+                                <Text style={styles.functionName}>Từ yêu thích</Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>
@@ -155,7 +172,7 @@ const Home = ({navigation}: Props) => {
                         <TouchableNativeFeedback>
                             <View style={styles.functionButton}>
                                 <Text>Icon</Text>
-                                <Text style={styles.functionName}>Function Name</Text>
+                                <Text style={styles.functionName}>Cài đặt</Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>
@@ -215,7 +232,8 @@ const styles = StyleSheet.create({
     },
     functionButton: {
         flexDirection: 'row',
-        backgroundColor: 'cyan',
+        backgroundColor: COLORS.BACKGROUND_WHITE,
+        elevation: 1,
         padding: 15,
         borderRadius: 7,
         gap: 10,
@@ -224,6 +242,7 @@ const styles = StyleSheet.create({
     functionName: {
         fontSize: 18,
         fontWeight: '400',
+        color: COLORS.TEXT_BLACK,
     },
     dailyWordContainer: {
         // backgroundColor: 'green',

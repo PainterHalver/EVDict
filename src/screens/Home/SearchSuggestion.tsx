@@ -30,7 +30,14 @@ const SearchSuggestion = ({searchSuggestions}: Props) => {
                                     borderBottomWidth: index === searchSuggestions.length - 1 ? 0 : 0.7,
                                     flexDirection: 'row',
                                 }}>
-                                <Text style={{color: COLORS.TEXT_WHITE, fontSize: 16}}>{item.word}</Text>
+                                <View>
+                                    <Text style={{color: COLORS.TEXT_WHITE, fontSize: 18}}>
+                                        {item.word.length > 25 ? item.word.slice(0, 25) + '...' : item.word}
+                                    </Text>
+                                    <Text style={{color: COLORS.TEXT_WHITE_BLUR, fontSize: 14}}>
+                                        {item.mean.length > 40 ? item.mean.slice(0, 40) + '...' : item.mean}
+                                    </Text>
+                                </View>
                             </View>
                         </TouchableNativeFeedback>
                     );
@@ -48,7 +55,7 @@ const styles = StyleSheet.create({
         right: 25,
         top: -10,
         zIndex: 100,
-        maxHeight: 300,
+        maxHeight: 500,
     },
 });
 
