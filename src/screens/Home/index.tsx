@@ -21,6 +21,10 @@ import {useDatabase} from '../../contexts/DatabaseContext';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Word} from '../../types';
 import SearchSuggestion from './SearchSuggestion';
+import {HistoryIcon} from '../../icons/HistoryIcon';
+import {TranslateTextIcon} from '../../icons/TranslateIcon';
+import {HeartIcon} from '../../icons/HeartIcon';
+import {SettingsIcon} from '../../icons/SettingsIcon';
 
 // Prop 1 là prop gần nhất, 2 là của parent
 type Props = StackScreenProps<RootStackParamList, 'Home'>;
@@ -62,20 +66,20 @@ const Home = ({navigation}: Props) => {
     }, [query]);
 
     // FIXME: Đang ko hoạt động
-    useEffect(() => {
-        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            if (query.length > 0 && searchSuggestions.length > 0) {
-                setQuery('');
-                return true;
-            } else {
-                return false;
-            }
-        });
+    // useEffect(() => {
+    //     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+    //         if (query.length > 0 && searchSuggestions.length > 0) {
+    //             setQuery('');
+    //             return true;
+    //         } else {
+    //             return false;
+    //         }
+    //     });
 
-        return () => {
-            backHandler.remove();
-        };
-    }, []);
+    //     return () => {
+    //         backHandler.remove();
+    //     };
+    // }, []);
 
     return (
         <View style={styles.containerWrapper}>
@@ -141,29 +145,29 @@ const Home = ({navigation}: Props) => {
                     <View style={styles.function}>
                         <TouchableNativeFeedback
                             onPress={() => {
-                                navigation.navigate('TranslateText', {});
+                                navigation.navigate('History');
                             }}>
                             <View style={styles.functionButton}>
-                                <Text>Icon</Text>
-                                <Text style={styles.functionName}>Dịch văn bản</Text>
+                                <HistoryIcon size={25} color={COLORS.TEXT_BLACK} />
+                                <Text style={styles.functionName}>Từ đã tra</Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>
                     <View style={styles.function}>
                         <TouchableNativeFeedback
                             onPress={() => {
-                                navigation.navigate('History');
+                                navigation.navigate('TranslateText', {});
                             }}>
                             <View style={styles.functionButton}>
-                                <Text>Icon</Text>
-                                <Text style={styles.functionName}>Từ đã tra</Text>
+                                <TranslateTextIcon size={25} color={COLORS.TEXT_BLACK} />
+                                <Text style={styles.functionName}>Dịch văn bản</Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>
                     <View style={styles.function}>
                         <TouchableNativeFeedback>
                             <View style={styles.functionButton}>
-                                <Text>Icon</Text>
+                                <HeartIcon size={25} color={COLORS.TEXT_BLACK} />
                                 <Text style={styles.functionName}>Từ yêu thích</Text>
                             </View>
                         </TouchableNativeFeedback>
@@ -171,7 +175,7 @@ const Home = ({navigation}: Props) => {
                     <View style={styles.function}>
                         <TouchableNativeFeedback>
                             <View style={styles.functionButton}>
-                                <Text>Icon</Text>
+                                <SettingsIcon size={25} color={COLORS.TEXT_BLACK} />
                                 <Text style={styles.functionName}>Cài đặt</Text>
                             </View>
                         </TouchableNativeFeedback>

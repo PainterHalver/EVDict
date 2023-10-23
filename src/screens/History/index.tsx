@@ -130,6 +130,7 @@ const History = ({navigation, route}: Props) => {
                     <View
                         style={{
                             flex: 1,
+                            marginTop: 5,
                             marginBottom: 15,
                             borderRadius: 7,
                             backgroundColor: COLORS.BACKGROUND_WHITE,

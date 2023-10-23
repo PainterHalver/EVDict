@@ -3,3 +3,9 @@ export type Word = {
     mean: string;
     av: string;
 };
+
+export type IconProps = {
+    size?: number | string;
+    fill?: string;
+    color: string;
+};
