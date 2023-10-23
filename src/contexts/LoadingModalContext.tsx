@@ -1,5 +1,6 @@
 import React, {createContext, useContext} from 'react';
 import {Modal, View, ActivityIndicator, StyleSheet} from 'react-native';
+import {COLORS} from '../constants';
 
 export type LoadingModalContextType = {
     loading: boolean;
@@ -44,7 +45,7 @@ const LoadingModal = ({loading, setLoading}: LoadingModalProps) => {
             statusBarTranslucent={true}>
             <View style={styles.modalBackground}>
                 <View style={styles.activityIndicatorWrapper}>
-                    <ActivityIndicator size="large" color="#0000ff" />
+                    <ActivityIndicator size="large" color={COLORS.BACKGROUND_PRIMARY} />
                 </View>
             </View>
         </Modal>
