@@ -152,8 +152,8 @@ const Bookmark = ({navigation, route}: Props) => {
                                         }}>
                                         <View style={{gap: 5, marginRight: 'auto'}}>
                                             <Text style={{fontSize: 18, color: COLORS.TEXT_BLACK}}>
-                                                {category.name.length > 30
-                                                    ? category.name.slice(0, 30) + '...'
+                                                {category.name.length > 28
+                                                    ? category.name.slice(0, 28) + '...'
                                                     : category.name}
                                             </Text>
                                             <Text style={{fontSize: 15, color: COLORS.TEXT_GRAY}}>

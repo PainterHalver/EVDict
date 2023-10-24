@@ -2,7 +2,7 @@ import React, {createContext, useContext, useEffect, useState} from 'react';
 import SQLite from 'react-native-sqlite-storage';
 import {Buffer} from 'buffer';
 import {Category, Word} from '../types';
-import {filterBadChars, populateHtml} from '../utils/helpers';
+import {decodeAv, filterBadChars, populateHtml} from '../utils/helpers';
 
 export type DatabaseContextType = {
     getWord: (word: string) => Promise<Word | undefined>;
@@ -13,6 +13,9 @@ export type DatabaseContextType = {
     addCategory: (name: string) => Promise<void>;
     deleteCategory: (id: number) => Promise<void>;
     editCategory: (id: number, name: string) => Promise<void>;
+    getWordsFromCategory: (id: number) => Promise<Word[]>;
+    addWordToCategory: (word: string, categoryId: number) => Promise<void>;
+    removeWordFromCategory: (word: string, categoryId: number) => Promise<void>;
 };
 
 // SQLite.DEBUG(true);
@@ -27,29 +30,29 @@ const DatabaseContext = createContext<DatabaseContextType>({
     addCategory: 0 as any,
     deleteCategory: 0 as any,
     editCategory: 0 as any,
+    getWordsFromCategory: 0 as any,
+    addWordToCategory: 0 as any,
+    removeWordFromCategory: 0 as any,
 });
 
 export const DatabaseProvider = ({children}: any) => {
-    const [dataDb, setDataDb] = useState<SQLite.SQLiteDatabase | null>(null);
-    const [appDb, setAppDb] = useState<SQLite.SQLiteDatabase | null>(null);
+    const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
 
     const createTables = async () => {
         try {
-            if (!appDb) throw new Error('App database is not ready');
+            if (!db) throw new Error('App database is not ready');
 
             // Bảng lịch sử
-            await appDb.executeSql(
+            await db.executeSql(
                 `CREATE TABLE IF NOT EXISTS word_history (
                     word TEXT PRIMARY KEY NOT NULL,
-                    mean TEXT NOT NULL,
-                    av TEXT NOT NULL,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )`,
             );
             console.log("CREATED TABLE 'word_history'");
 
             // Bảng category
-            await appDb.executeSql(
+            await db.executeSql(
                 `CREATE TABLE IF NOT EXISTS categories (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL,
@@ -59,10 +62,10 @@ export const DatabaseProvider = ({children}: any) => {
             console.log("CREATED TABLE 'categories'");
 
             // Thêm sẵn 1 category
-            await appDb.executeSql(`INSERT OR IGNORE INTO categories (id, name) VALUES (1, 'Từ vựng quan trọng')`);
+            await db.executeSql(`INSERT OR IGNORE INTO categories (id, name) VALUES (1, 'Từ vựng quan trọng')`);
 
             // Bảng nối từ vựng và category
-            await appDb.executeSql(
+            await db.executeSql(
                 `CREATE TABLE IF NOT EXISTS word_categories (
                     word TEXT NOT NULL PRIMARY KEY,
                     category_id INTEGER NOT NULL,
@@ -78,9 +81,9 @@ export const DatabaseProvider = ({children}: any) => {
 
     const getCategories = async (): Promise<Category[]> => {
         try {
-            if (!appDb) throw new Error('App database is not ready');
+            if (!db) throw new Error('App database is not ready');
 
-            const rs = await appDb.executeSql(`
+            const rs = await db.executeSql(`
                 SELECT categories.*, COUNT(word_categories.category_id) as count FROM categories
                 LEFT JOIN word_categories ON word_categories.category_id = categories.id
                 GROUP BY categories.id
@@ -95,9 +98,9 @@ export const DatabaseProvider = ({children}: any) => {
 
     const addCategory = async (name: string): Promise<void> => {
         try {
-            if (!appDb) throw new Error('App database is not ready');
+            if (!db) throw new Error('App database is not ready');
 
-            await appDb.executeSql(`INSERT INTO categories (name) VALUES (?)`, [name]);
+            await db.executeSql(`INSERT INTO categories (name) VALUES (?)`, [name]);
         } catch (error) {
             console.log(error);
         }
@@ -105,9 +108,9 @@ export const DatabaseProvider = ({children}: any) => {
 
     const deleteCategory = async (id: number): Promise<void> => {
         try {
-            if (!appDb) throw new Error('App database is not ready');
+            if (!db) throw new Error('App database is not ready');
 
-            await appDb.executeSql(`DELETE FROM categories WHERE id = ?`, [id]);
+            await db.executeSql(`DELETE FROM categories WHERE id = ?`, [id]);
         } catch (error) {
             console.log(error);
         }
@@ -115,9 +118,48 @@ export const DatabaseProvider = ({children}: any) => {
 
     const editCategory = async (id: number, name: string): Promise<void> => {
         try {
-            if (!appDb) throw new Error('App database is not ready');
+            if (!db) throw new Error('App database is not ready');
 
-            await appDb.executeSql(`UPDATE categories SET name = ? WHERE id = ?`, [name, id]);
+            await db.executeSql(`UPDATE categories SET name = ? WHERE id = ?`, [name, id]);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getWordsFromCategory = async (categoryId: number, limit: number = 100): Promise<Word[]> => {
+        try {
+            if (!db) throw new Error('App database is not ready');
+
+            const rs = await db.executeSql(
+                `SELECT * FROM word_categories
+              LEFT JOIN av ON av.word = word_categories.word 
+              WHERE category_id = ? ORDER BY created_at LIMIT ?`,
+                [categoryId, limit],
+            );
+            const words = rs[0].rows.raw();
+            decodeAv(words);
+            return words;
+        } catch (error) {
+            console.log(error);
+            return [];
+        }
+    };
+
+    const addWordToCategory = async (word: string, categoryId: number): Promise<void> => {
+        try {
+            if (!db) throw new Error('App database is not ready');
+
+            await db.executeSql(`INSERT INTO word_categories (word, category_id) VALUES (?, ?)`, [word, categoryId]);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const removeWordFromCategory = async (word: string, categoryId: number): Promise<void> => {
+        try {
+            if (!db) throw new Error('App database is not ready');
+
+            await db.executeSql(`DELETE FROM word_categories WHERE word = ? AND category_id = ?`, [word, categoryId]);
         } catch (error) {
             console.log(error);
         }
@@ -125,12 +167,12 @@ export const DatabaseProvider = ({children}: any) => {
 
     const getWord = async (word: string): Promise<Word | undefined> => {
         try {
-            if (!dataDb) throw new Error('Data database is not ready');
+            if (!db) throw new Error('Data database is not ready');
 
             word = filterBadChars(word);
             console.log(word);
             const result = await new Promise<Word | undefined>(async (resolve, reject) => {
-                await dataDb.transaction(tx => {
+                await db.transaction(tx => {
                     tx.executeSql(
                         `SELECT * FROM av WHERE word = ? LIMIT 1`,
                         [word],
@@ -162,10 +204,10 @@ export const DatabaseProvider = ({children}: any) => {
 
     const getWordsStartsWith = async (query: string, limit: number = 5): Promise<Word[]> => {
         try {
-            if (!dataDb) throw new Error('Data database is not ready');
+            if (!db) throw new Error('Data database is not ready');
 
             const result = await new Promise<Word[]>(async (resolve, reject) => {
-                await dataDb.transaction(tx => {
+                await db.transaction(tx => {
                     tx.executeSql(
                         `SELECT word, mean, av FROM av WHERE word LIKE ? ORDER BY word ASC LIMIT ?`,
                         [query + '%', limit],
@@ -174,10 +216,7 @@ export const DatabaseProvider = ({children}: any) => {
                                 try {
                                     // return all rows after converting to array
                                     const rows = rs.rows.raw();
-                                    rows.forEach((row: Word) => {
-                                        row.av = new Buffer(row.av, 'base64').toString('utf8');
-                                        row.av = populateHtml(row.av);
-                                    });
+                                    decodeAv(rows);
                                     resolve(rows);
                                 } catch (error) {
                                     console.log(error);
@@ -199,10 +238,15 @@ export const DatabaseProvider = ({children}: any) => {
 
     const getHistory = async (): Promise<Word[]> => {
         try {
-            if (!appDb) throw new Error('App database is not ready');
+            if (!db) throw new Error('App database is not ready');
 
-            const rs = await appDb.executeSql('SELECT * FROM word_history ORDER BY created_at DESC LIMIT 100');
+            const rs = await db.executeSql(`
+                SELECT * FROM word_history 
+                JOIN av ON av.word = word_history.word
+                ORDER BY created_at DESC LIMIT 100
+            `);
             const rows = rs[0].rows.raw();
+            decodeAv(rows);
             return rows;
         } catch (error) {
             console.log('GET HISTORY:', error);
@@ -212,14 +256,10 @@ export const DatabaseProvider = ({children}: any) => {
 
     const addHistoryWord = async (word: Word): Promise<void> => {
         try {
-            if (!appDb) throw new Error('App database is not ready');
+            if (!db) throw new Error('App database is not ready');
 
             // Xóa dòng cũ đi nếu có và tạo dòng mới, tiện đỡ phải lọc trùng
-            await appDb.executeSql('INSERT OR REPLACE INTO word_history (word, mean, av) VALUES (?, ?, ?)', [
-                word.word,
-                word.mean,
-                word.av,
-            ]);
+            await db.executeSql('INSERT OR REPLACE INTO word_history (word) VALUES (?)', [word.word]);
         } catch (error) {
             console.log('ADD HISTORY WORD:', error);
         }
@@ -228,16 +268,10 @@ export const DatabaseProvider = ({children}: any) => {
     useEffect(() => {
         (async () => {
             try {
-                setDataDb(
+                setDb(
                     await SQLite.openDatabase({
                         name: 'av.db',
                         createFromLocation: '~av_all_v3.db',
-                    }),
-                );
-                setAppDb(
-                    await SQLite.openDatabase({
-                        name: 'app.db',
-                        location: 'default',
                     }),
                 );
             } catch (error) {
@@ -248,11 +282,11 @@ export const DatabaseProvider = ({children}: any) => {
 
     useEffect(() => {
         (async () => {
-            if (appDb) {
+            if (db) {
                 await createTables();
             }
         })();
-    }, [appDb]);
+    }, [db]);
 
     return (
         <DatabaseContext.Provider
@@ -265,6 +299,9 @@ export const DatabaseProvider = ({children}: any) => {
                 addCategory,
                 deleteCategory,
                 editCategory,
+                getWordsFromCategory,
+                addWordToCategory,
+                removeWordFromCategory,
             }}>
             {children}
         </DatabaseContext.Provider>
