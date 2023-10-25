@@ -13,4 +13,5 @@ export const COLORS = {
     BACKGROUND_CANCEL_BUTTON: '#808080',
 
     RED: '#c50000',
+    YELLOW: '#f5a623',
 };

@@ -30,20 +30,31 @@ import {RootStackParamList} from '../../../App';
 import {COLORS} from '../../constants';
 import {useDatabase} from '../../contexts/DatabaseContext';
 import {createMarkup} from '../../utils/markup';
+import {Category} from '../../types';
+import CategoryModal from './CategoryModal';
 LogBox.ignoreLogs(['new NativeEventEmitter']);
 
 type Props = StackScreenProps<RootStackParamList, 'WordDetail'>;
 const screenWidth = Dimensions.get('window').width;
 
 const WordDetail = ({navigation, route}: Props) => {
-    const {getWord, addHistoryWord} = useDatabase();
+    const {getWord, addHistoryWord, getCategories, getSelectedCategoryIds} = useDatabase();
     const word = route.params?.word;
+    const [categories, setCategories] = React.useState<Category[]>([]);
+    const [showCategoryModal, setShowCategoryModal] = React.useState<boolean>(false);
+    const [selectedCategories, setSelectedCategories] = React.useState<number[]>([]);
 
     useEffect(() => {
-        // Add word to history
         (async () => {
-            if (word) {
-                await addHistoryWord(word);
+            try {
+                if (word) {
+                    await addHistoryWord(word);
+                }
+                setCategories(await getCategories());
+                const ids = await getSelectedCategoryIds(word);
+                setSelectedCategories(ids);
+            } catch (error) {
+                console.log(error);
             }
         })();
     }, []);
@@ -185,8 +196,14 @@ const WordDetail = ({navigation, route}: Props) => {
                         <TouchableOpacity hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
                             <MaterialIcon name="report" size={25} color={COLORS.TEXT_WHITE} />
                         </TouchableOpacity>
-                        <TouchableOpacity hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-                            <IoIcon name="star" size={25} color={COLORS.TEXT_WHITE} />
+                        <TouchableOpacity
+                            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+                            onPress={() => setShowCategoryModal(true)}>
+                            <IoIcon
+                                name="star"
+                                size={25}
+                                color={selectedCategories.length > 0 ? COLORS.YELLOW : COLORS.TEXT_WHITE}
+                            />
                         </TouchableOpacity>
                     </View>
 
@@ -341,6 +358,17 @@ const WordDetail = ({navigation, route}: Props) => {
                     </Animated.View>
                 </PanGestureHandler>
             </View>
+
+            <CategoryModal
+                visible={showCategoryModal}
+                onDismiss={() => {
+                    setShowCategoryModal(false);
+                }}
+                categories={categories}
+                word={word}
+                selectedCategories={selectedCategories}
+                setSelectedCategories={setSelectedCategories}
+            />
         </View>
     );
 };

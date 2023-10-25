@@ -6,11 +6,12 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {DatabaseProvider} from './src/contexts/DatabaseContext';
 import Home from './src/screens/Home';
 import WordDetail from './src/screens/WordDetail';
-import {Word} from './src/types';
+import {Category, Word} from './src/types';
 import {LoadingModalProvider} from './src/contexts/LoadingModalContext';
 import TranslateText from './src/screens/TranslateText';
 import History from './src/screens/History';
 import Bookmark from './src/screens/Bookmark';
+import CategoryScreen from './src/screens/Bookmark/CategoryScreen';
 
 export type RootStackParamList = {
     Home: undefined;
@@ -18,6 +19,7 @@ export type RootStackParamList = {
     TranslateText: {text?: string};
     History: undefined;
     YourWord: undefined;
+    CategoryScreen: {category: Category};
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -54,6 +56,13 @@ function App(): JSX.Element {
                             <Stack.Screen
                                 name="YourWord"
                                 component={Bookmark}
+                                options={{
+                                    ...TransitionPresets.SlideFromRightIOS,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="CategoryScreen"
+                                component={CategoryScreen}
                                 options={{
                                     ...TransitionPresets.SlideFromRightIOS,
                                 }}

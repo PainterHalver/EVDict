@@ -138,7 +138,10 @@ const Bookmark = ({navigation, route}: Props) => {
                         contentContainerStyle={{paddingHorizontal: 10, gap: 10, paddingTop: 15, paddingBottom: 20}}>
                         {categories.map((category, index) => {
                             return (
-                                <TouchableNativeFeedback>
+                                <TouchableNativeFeedback
+                                    onPress={() => {
+                                        navigation.navigate('CategoryScreen', {category: category});
+                                    }}>
                                     <View
                                         style={{
                                             flexDirection: 'row',
