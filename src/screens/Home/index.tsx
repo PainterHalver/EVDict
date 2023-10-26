@@ -31,9 +31,10 @@ import {BookIcon} from '../../icons/BookIcon';
 type Props = StackScreenProps<RootStackParamList, 'Home'>;
 
 const Home = ({navigation}: Props) => {
-    const {getWord, getWordsStartsWith} = useDatabase();
+    const {getWord, getWordsStartsWith, getTodaysWord} = useDatabase();
     const [query, setQuery] = React.useState<string>('');
     const [searchSuggestions, setSearchSuggestions] = React.useState<Word[]>([]);
+    const [randomWord, setRandomWord] = React.useState<Word | null>(null);
 
     const querySubmitHandler = async (query: string) => {
         try {
@@ -66,21 +67,14 @@ const Home = ({navigation}: Props) => {
         };
     }, [query]);
 
-    // FIXME: Đang ko hoạt động
-    // useEffect(() => {
-    //     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-    //         if (query.length > 0 && searchSuggestions.length > 0) {
-    //             setQuery('');
-    //             return true;
-    //         } else {
-    //             return false;
-    //         }
-    //     });
-
-    //     return () => {
-    //         backHandler.remove();
-    //     };
-    // }, []);
+    useEffect(() => {
+        (async () => {
+            const result = await getTodaysWord();
+            if (result) {
+                setRandomWord(result);
+            }
+        })();
+    }, []);
 
     return (
         <View style={styles.containerWrapper}>
@@ -184,25 +178,34 @@ const Home = ({navigation}: Props) => {
                             </View>
                         </TouchableNativeFeedback>
                     </View>
-                    <View style={styles.function}>
-                        <TouchableNativeFeedback>
-                            <View style={styles.functionButton}>
-                                <Text>Icon</Text>
-                                <Text style={styles.functionName}>Function Name</Text>
-                            </View>
-                        </TouchableNativeFeedback>
-                    </View>
+
                     <View style={styles.dailyWordContainer}>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback
+                            onPress={() => {
+                                if (randomWord) {
+                                    navigation.navigate('WordDetail', {word: randomWord});
+                                }
+                            }}>
                             <View
                                 style={{
                                     paddingVertical: 10,
-                                    backgroundColor: 'lime',
                                     borderRadius: 10,
                                     alignItems: 'center',
+                                    backgroundColor: COLORS.BACKGROUND_WHITE,
+                                    elevation: 1,
                                 }}>
-                                <Text style={{fontSize: 20, fontWeight: '500'}}>Từ của ngày hôm nay</Text>
-                                <Text style={{marginVertical: 20, fontSize: 18, fontWeight: '400'}}>Challenge</Text>
+                                <Text style={{fontSize: 20, fontWeight: '500', color: COLORS.TEXT_BLACK}}>
+                                    Từ của ngày hôm nay
+                                </Text>
+                                <Text
+                                    style={{
+                                        marginVertical: 20,
+                                        fontSize: 18,
+                                        fontWeight: '400',
+                                        color: COLORS.TEXT_BLACK,
+                                    }}>
+                                    {randomWord?.word}
+                                </Text>
                             </View>
                         </TouchableNativeFeedback>
                     </View>
@@ -234,7 +237,6 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     function: {
-        // backgroundColor: 'yellow',
         paddingHorizontal: 15,
         paddingVertical: 10,
     },
@@ -253,7 +255,6 @@ const styles = StyleSheet.create({
         color: COLORS.TEXT_BLACK,
     },
     dailyWordContainer: {
-        // backgroundColor: 'green',
         paddingVertical: 10,
         paddingHorizontal: 15,
     },

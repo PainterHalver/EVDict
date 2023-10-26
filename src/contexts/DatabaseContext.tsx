@@ -16,7 +16,8 @@ export type DatabaseContextType = {
     getWordsFromCategory: (id: number) => Promise<Word[]>;
     getSelectedCategoryIds: (word: Word) => Promise<number[]>;
     addWordToCategories: (word: string, categoryIds: number[]) => Promise<void>;
-    removeWordFromCategory: (word: string, categoryId: number) => Promise<void>;
+    deleteWordsFromCategory: (word: string[], categoryId: number) => Promise<void>;
+    getTodaysWord: () => Promise<Word | undefined>;
 };
 
 // SQLite.DEBUG(true);
@@ -34,7 +35,8 @@ const DatabaseContext = createContext<DatabaseContextType>({
     getWordsFromCategory: 0 as any,
     getSelectedCategoryIds: 0 as any,
     addWordToCategories: 0 as any,
-    removeWordFromCategory: 0 as any,
+    deleteWordsFromCategory: 0 as any,
+    getTodaysWord: 0 as any,
 });
 
 export const DatabaseProvider = ({children}: any) => {
@@ -180,11 +182,38 @@ export const DatabaseProvider = ({children}: any) => {
         }
     };
 
-    const removeWordFromCategory = async (word: string, categoryId: number): Promise<void> => {
+    const deleteWordsFromCategory = async (words: string[], categoryId: number): Promise<void> => {
         try {
             if (!db) throw new Error('App database is not ready');
 
-            await db.executeSql(`DELETE FROM word_categories WHERE word = ? AND category_id = ?`, [word, categoryId]);
+            await db.executeSql(
+                `
+                DELETE FROM word_categories WHERE word IN (${words.map(() => '?').join(',')}) AND category_id = ?`,
+                [...words, categoryId],
+            );
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getTodaysWord = async (): Promise<Word | undefined> => {
+        try {
+            if (!db) throw new Error('App database is not ready');
+
+            // Lấy tất cả số lượng từ
+            const rs = await db.executeSql(`SELECT COUNT(*) as count FROM av`);
+            const total = rs[0].rows.raw()[0].count;
+
+            // Lấy một từ bất kỳ dùng ngày hôm nay làm seed
+            const date = new Date();
+            const seed = date.getDate() + date.getMonth() + date.getFullYear();
+            const random = Math.floor((seed * 133773) % total); // TODO: Đảm bảo cover hết từ
+
+            const rs2 = await db.executeSql(`SELECT * FROM av LIMIT 1 OFFSET ?`, [random]);
+            const word = rs2[0].rows.raw()[0];
+            word.av = new Buffer(word.av, 'base64').toString('utf8');
+            word.av = populateHtml(word.av);
+            return word;
         } catch (error) {
             console.log(error);
         }
@@ -327,7 +356,8 @@ export const DatabaseProvider = ({children}: any) => {
                 getWordsFromCategory,
                 getSelectedCategoryIds,
                 addWordToCategories,
-                removeWordFromCategory,
+                deleteWordsFromCategory,
+                getTodaysWord,
             }}>
             {children}
         </DatabaseContext.Provider>

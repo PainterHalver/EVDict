@@ -25,6 +25,8 @@ import {COLORS} from '../../../constants';
 import {useDatabase} from '../../../contexts/DatabaseContext';
 import {useLoadingModal} from '../../../contexts/LoadingModalContext';
 import {Word} from '../../../types';
+import CheckBox from '@react-native-community/checkbox';
+import MyModal from '../../../component/MyModal';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 
@@ -32,11 +34,27 @@ type Props = StackScreenProps<RootStackParamList, 'CategoryScreen'>;
 
 const CategoryScreen = ({navigation, route}: Props) => {
     const {setLoading} = useLoadingModal();
-    const {getWordsFromCategory} = useDatabase();
+    const {getWordsFromCategory, deleteWordsFromCategory} = useDatabase();
     const [query, setQuery] = React.useState<string>('');
     const [words, setWords] = React.useState<Word[]>([]);
     const [filteredWords, setFilteredWords] = React.useState<Word[]>([]);
     const category = route.params?.category;
+    const [selectedWords, setSelectedWords] = React.useState<Word[]>([]);
+    const [comfirmDeleteModalOpen, setComfirmDeleteModalOpen] = React.useState<boolean>(false);
+
+    const loadWords = async () => {
+        try {
+            const categoryWords = await getWordsFromCategory(category.id);
+            setWords(categoryWords);
+            setFilteredWords(categoryWords);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        loadWords();
+    }, []);
 
     const speak = async (text: string) => {
         try {
@@ -50,20 +68,23 @@ const CategoryScreen = ({navigation, route}: Props) => {
         }
     };
 
-    useEffect(() => {
-        (async () => {
-            try {
-                // setLoading(true);
-                const categoryWords = await getWordsFromCategory(category.id);
-                setWords(categoryWords);
-                setFilteredWords(categoryWords);
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
-        })();
-    }, []);
+    const handleDeleteSelectedWords = async () => {
+        try {
+            setLoading(true);
+            await deleteWordsFromCategory(
+                selectedWords.map(w => w.word),
+                category.id,
+            );
+            setSelectedWords([]);
+            await loadWords();
+            ToastAndroid.show('Xóa thành công', ToastAndroid.LONG);
+        } catch (error) {
+            console.log(error);
+            ToastAndroid.show('Đã có lỗi xảy ra, xin vui lòng thử lại sau', ToastAndroid.LONG);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <View style={styles.containerWrapper}>
@@ -140,6 +161,15 @@ const CategoryScreen = ({navigation, route}: Props) => {
                         }}>
                         <ScrollView showsVerticalScrollIndicator={false}>
                             {filteredWords.map((word, index) => {
+                                const isSelected = selectedWords.includes(word);
+                                const toggleSelection = () => {
+                                    if (isSelected) {
+                                        setSelectedWords(selectedWords.filter(item => item.word !== word.word));
+                                    } else {
+                                        setSelectedWords([...selectedWords, word]);
+                                    }
+                                };
+
                                 return (
                                     <TouchableNativeFeedback
                                         key={word.word}
@@ -150,17 +180,24 @@ const CategoryScreen = ({navigation, route}: Props) => {
                                             style={{
                                                 flexDirection: 'row',
                                                 paddingVertical: 10,
-                                                paddingHorizontal: 15,
+                                                paddingRight: 15,
+                                                paddingLeft: 7,
+                                                gap: 7,
                                                 alignItems: 'center',
                                                 borderBottomColor: COLORS.BORDER_GRAY,
                                                 borderBottomWidth: index === words.length - 1 ? 0 : 0.7,
                                             }}>
+                                            <CheckBox
+                                                value={isSelected}
+                                                onValueChange={toggleSelection}
+                                                hitSlop={{bottom: 20, left: 20, top: 20, right: 20}}
+                                            />
                                             <View style={{marginRight: 'auto'}}>
                                                 <Text style={{fontSize: 18, color: COLORS.TEXT_BLACK}}>
                                                     {word.word.length > 30 ? word.word.slice(0, 30) + '...' : word.word}
                                                 </Text>
                                                 <Text style={{fontSize: 15, color: COLORS.TEXT_GRAY}}>
-                                                    {word.mean.length > 40 ? word.mean.slice(0, 40) + '...' : word.mean}
+                                                    {word.mean.length > 36 ? word.mean.slice(0, 36) + '...' : word.mean}
                                                 </Text>
                                             </View>
                                             <TouchableHighlight
@@ -183,8 +220,85 @@ const CategoryScreen = ({navigation, route}: Props) => {
                             })}
                         </ScrollView>
                     </View>
+
+                    <View style={{flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10}}>
+                        <TouchableHighlight
+                            onPress={() => {
+                                if (selectedWords.length === filteredWords.length) {
+                                    setSelectedWords([]);
+                                } else {
+                                    setSelectedWords(filteredWords);
+                                }
+                            }}
+                            underlayColor={COLORS.BACKGROUND_PRIMARY_DARK}
+                            style={[styles.controlButton, {backgroundColor: COLORS.BACKGROUND_PRIMARY}]}>
+                            <Text style={{fontSize: 16, color: COLORS.TEXT_WHITE, fontWeight: '500'}}>
+                                {selectedWords.length === filteredWords.length ? 'Bỏ chọn tất cả' : 'Chọn tất cả'}
+                            </Text>
+                        </TouchableHighlight>
+                        <TouchableHighlight
+                            onPress={() => setComfirmDeleteModalOpen(true)}
+                            underlayColor={COLORS.RED_DARK}
+                            disabled={selectedWords.length === 0}
+                            style={[
+                                styles.controlButton,
+                                {backgroundColor: selectedWords.length === 0 ? COLORS.BUTTON_DISABLED : COLORS.RED},
+                            ]}>
+                            <Text style={{fontSize: 16, color: COLORS.TEXT_WHITE, fontWeight: '500'}}>Xóa</Text>
+                        </TouchableHighlight>
+                    </View>
                 </View>
             </View>
+
+            {/* Delete confirm modal */}
+            <MyModal visible={comfirmDeleteModalOpen} onDismiss={() => setComfirmDeleteModalOpen(false)}>
+                <View style={styles.modal}>
+                    <Text style={{color: COLORS.TEXT_BLACK, fontSize: 18, fontWeight: '500'}}>
+                        Xóa từ khỏi danh sách
+                    </Text>
+                    <Text style={{color: COLORS.TEXT_BLACK, fontSize: 16, fontWeight: '400'}}>
+                        Bạn có chắc chắn muốn xóa các từ đã chọn khỏi danh sách không?
+                    </Text>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            marginHorizontal: -15,
+                            marginTop: 5,
+                        }}>
+                        <TouchableHighlight
+                            style={{flex: 1, borderBottomLeftRadius: 7}}
+                            onPress={() => setComfirmDeleteModalOpen(false)}>
+                            <View
+                                style={{
+                                    backgroundColor: COLORS.BACKGROUND_CANCEL_BUTTON,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    paddingVertical: 10,
+                                    borderBottomLeftRadius: 7,
+                                }}>
+                                <Text style={{color: COLORS.TEXT_WHITE, fontSize: 16, fontWeight: '400'}}>Hủy</Text>
+                            </View>
+                        </TouchableHighlight>
+                        <TouchableHighlight
+                            style={{flex: 1, borderBottomRightRadius: 7}}
+                            onPress={() => {
+                                handleDeleteSelectedWords();
+                                setComfirmDeleteModalOpen(false);
+                            }}>
+                            <View
+                                style={{
+                                    backgroundColor: COLORS.RED,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    paddingVertical: 10,
+                                    borderBottomRightRadius: 7,
+                                }}>
+                                <Text style={{color: COLORS.TEXT_WHITE, fontSize: 16, fontWeight: '400'}}>Xóa</Text>
+                            </View>
+                        </TouchableHighlight>
+                    </View>
+                </View>
+            </MyModal>
         </View>
     );
 };
@@ -209,5 +323,21 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 10,
         gap: 7,
+    },
+    controlButton: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 7,
+        paddingVertical: 10,
+    },
+    modal: {
+        width: '80%',
+        backgroundColor: COLORS.BACKGROUND_WHITE,
+        padding: 15,
+        paddingBottom: 0,
+        borderRadius: 7,
+        gap: 10,
+        elevation: 5,
     },
 });

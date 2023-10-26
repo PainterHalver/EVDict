@@ -12,6 +12,9 @@ export const COLORS = {
     BACKGROUND_WHITE_DARK: '#e6e6e6',
     BACKGROUND_CANCEL_BUTTON: '#808080',
 
+    BUTTON_DISABLED: '#a0a0a0',
+
     RED: '#c50000',
+    RED_DARK: '#920000',
     YELLOW: '#f5a623',
 };
