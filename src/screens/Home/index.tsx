@@ -31,7 +31,7 @@ import {BookIcon} from '../../icons/BookIcon';
 type Props = StackScreenProps<RootStackParamList, 'Home'>;
 
 const Home = ({navigation}: Props) => {
-    const {getWord, getWordsStartsWith, getTodaysWord} = useDatabase();
+    const {db, getWord, getWordsStartsWith, getTodaysWord} = useDatabase();
     const [query, setQuery] = React.useState<string>('');
     const [searchSuggestions, setSearchSuggestions] = React.useState<Word[]>([]);
     const [randomWord, setRandomWord] = React.useState<Word | null>(null);
@@ -68,13 +68,15 @@ const Home = ({navigation}: Props) => {
     }, [query]);
 
     useEffect(() => {
+        if (!db) return;
+
         (async () => {
             const result = await getTodaysWord();
             if (result) {
                 setRandomWord(result);
             }
         })();
-    }, []);
+    }, [db]);
 
     return (
         <View style={styles.containerWrapper}>

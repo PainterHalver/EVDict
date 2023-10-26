@@ -139,6 +139,7 @@ const Bookmark = ({navigation, route}: Props) => {
                         {categories.map((category, index) => {
                             return (
                                 <TouchableNativeFeedback
+                                    key={index}
                                     onPress={() => {
                                         navigation.navigate('CategoryScreen', {category: category});
                                     }}>

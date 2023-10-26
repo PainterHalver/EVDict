@@ -5,6 +5,7 @@ import {Category, Word} from '../types';
 import {decodeAv, filterBadChars, populateHtml} from '../utils/helpers';
 
 export type DatabaseContextType = {
+    db: SQLite.SQLiteDatabase | null;
     getWord: (word: string) => Promise<Word | undefined>;
     getWordsStartsWith: (word: string, limit?: number) => Promise<Word[]>;
     getHistory: () => Promise<Word[]>;
@@ -24,6 +25,7 @@ export type DatabaseContextType = {
 SQLite.enablePromise(true);
 
 const DatabaseContext = createContext<DatabaseContextType>({
+    db: null,
     getWord: 0 as any,
     getWordsStartsWith: 0 as any,
     getHistory: 0 as any,
@@ -345,6 +347,7 @@ export const DatabaseProvider = ({children}: any) => {
     return (
         <DatabaseContext.Provider
             value={{
+                db,
                 getWord,
                 getWordsStartsWith,
                 addHistoryWord,
