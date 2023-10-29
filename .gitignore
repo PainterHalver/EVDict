@@ -64,3 +64,4 @@ yarn-error.log
 
 # testing
 /coverage
+report_server/reports.txt
