@@ -116,8 +116,9 @@ const Home = ({navigation}: Props) => {
                             }}>
                             <IoIcon name="search" size={25} color={COLORS.TEXT_GRAY} />
                             <TextInput
-                                style={{fontSize: 17, flex: 1}}
+                                style={{fontSize: 17, flex: 1, color: COLORS.TEXT_BLACK}}
                                 placeholder="Nhập từ khóa tìm kiếm"
+                                placeholderTextColor={COLORS.TEXT_GRAY}
                                 value={query}
                                 onChangeText={setQuery}
                                 onSubmitEditing={event => {

@@ -23,7 +23,7 @@ app.post('/report', (req, res) => {
 
     console.log(`[+] ${word}##${report}`);
 
-    fs.appendFile(path.join(__dirname, 'reports.txt'), `${word}##${report}`, err => {
+    fs.appendFile(path.join(__dirname, 'reports.txt'), `${word}##${report}\n`, err => {
         if (err) {
             res.status(500).send('Thêm report thất bại');
         } else {
@@ -33,6 +33,7 @@ app.post('/report', (req, res) => {
 });
 
 app.get('/report', (req, res) => {
+    res.set({'content-type': 'text/plain; charset=utf-8'});
     fs.createReadStream(path.join(__dirname, 'reports.txt')).pipe(res);
 });
 
