@@ -12,6 +12,7 @@ import TranslateText from './src/screens/TranslateText';
 import History from './src/screens/History';
 import Bookmark from './src/screens/Bookmark';
 import CategoryScreen from './src/screens/Bookmark/CategoryScreen';
+import Settings from './src/screens/Settings';
 
 export type RootStackParamList = {
     Home: undefined;
@@ -20,6 +21,7 @@ export type RootStackParamList = {
     History: undefined;
     YourWord: undefined;
     CategoryScreen: {category: Category};
+    Settings: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -63,6 +65,13 @@ function App(): JSX.Element {
                             <Stack.Screen
                                 name="CategoryScreen"
                                 component={CategoryScreen}
+                                options={{
+                                    ...TransitionPresets.SlideFromRightIOS,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="Settings"
+                                component={Settings}
                                 options={{
                                     ...TransitionPresets.SlideFromRightIOS,
                                 }}
