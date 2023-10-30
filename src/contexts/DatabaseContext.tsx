@@ -6,6 +6,7 @@ import {decodeAv, filterBadChars, populateHtml} from '../utils/helpers';
 
 export type DatabaseContextType = {
     db: SQLite.SQLiteDatabase | null;
+    initFinished: boolean;
     getWord: (word: string) => Promise<Word | undefined>;
     getWordsStartsWith: (word: string, limit?: number) => Promise<Word[]>;
     getHistory: () => Promise<Word[]>;
@@ -26,6 +27,7 @@ SQLite.enablePromise(true);
 
 const DatabaseContext = createContext<DatabaseContextType>({
     db: null,
+    initFinished: false,
     getWord: 0 as any,
     getWordsStartsWith: 0 as any,
     getHistory: 0 as any,
@@ -43,6 +45,7 @@ const DatabaseContext = createContext<DatabaseContextType>({
 
 export const DatabaseProvider = ({children}: any) => {
     const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
+    const [initFinished, setInitFinished] = useState(false);
 
     const createTables = async () => {
         try {
@@ -340,6 +343,7 @@ export const DatabaseProvider = ({children}: any) => {
         (async () => {
             if (db) {
                 await createTables();
+                setInitFinished(true);
             }
         })();
     }, [db]);
@@ -348,6 +352,7 @@ export const DatabaseProvider = ({children}: any) => {
         <DatabaseContext.Provider
             value={{
                 db,
+                initFinished,
                 getWord,
                 getWordsStartsWith,
                 addHistoryWord,
