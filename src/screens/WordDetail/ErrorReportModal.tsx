@@ -82,7 +82,7 @@ const ErrorReportModal = ({visible, onDismiss, word}: Props) => {
                                 paddingVertical: 10,
                                 borderBottomRightRadius: 7,
                             }}>
-                            <Text style={{color: COLORS.TEXT_WHITE, fontSize: 16, fontWeight: '400'}}>Sửa</Text>
+                            <Text style={{color: COLORS.TEXT_WHITE, fontSize: 16, fontWeight: '400'}}>Gửi</Text>
                         </View>
                     </TouchableHighlight>
                 </View>
