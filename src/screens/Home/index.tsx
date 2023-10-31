@@ -13,6 +13,7 @@ import {
     TouchableNativeFeedback,
     View,
 } from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 import IoIcon from 'react-native-vector-icons/Ionicons';
 import FontawesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {RootStackParamList} from '../../../App';
@@ -31,10 +32,16 @@ import {BookIcon} from '../../icons/BookIcon';
 type Props = StackScreenProps<RootStackParamList, 'Home'>;
 
 const Home = ({navigation}: Props) => {
-    const {db, getWord, getWordsStartsWith, getTodaysWord} = useDatabase();
+    const {db, initFinished, getWord, getWordsStartsWith, getTodaysWord} = useDatabase();
     const [query, setQuery] = React.useState<string>('');
     const [searchSuggestions, setSearchSuggestions] = React.useState<Word[]>([]);
     const [randomWord, setRandomWord] = React.useState<Word | null>(null);
+
+    useEffect(() => {
+        if (initFinished) {
+            SplashScreen.hide();
+        }
+    }, [initFinished]);
 
     const querySubmitHandler = async (query: string) => {
         try {

@@ -16,7 +16,6 @@ import Settings from './src/screens/Settings';
 import SplashScreen from './src/screens/SplashScreen';
 
 export type RootStackParamList = {
-    SplashScreen: undefined;
     Home: undefined;
     WordDetail: {word: Word};
     TranslateText: {text?: string};
@@ -35,7 +34,6 @@ function App(): JSX.Element {
                 <LoadingModalProvider>
                     <NavigationContainer>
                         <Stack.Navigator screenOptions={{headerShown: false}}>
-                            <Stack.Screen name="SplashScreen" component={SplashScreen} />
                             <Stack.Screen name="Home" component={Home} />
                             <Stack.Screen
                                 name="WordDetail"
