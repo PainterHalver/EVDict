@@ -27,21 +27,23 @@ import {TranslateTextIcon} from '../../icons/TranslateIcon';
 import {HeartIcon} from '../../icons/HeartIcon';
 import {SettingsIcon} from '../../icons/SettingsIcon';
 import {BookIcon} from '../../icons/BookIcon';
+import {useSettings} from '../../contexts/SettingsContext';
 
 // Prop 1 là prop gần nhất, 2 là của parent
 type Props = StackScreenProps<RootStackParamList, 'Home'>;
 
 const Home = ({navigation}: Props) => {
     const {db, initFinished, getWord, getWordsStartsWith, getTodaysWord} = useDatabase();
+    const {finishedLoadingSettings} = useSettings();
     const [query, setQuery] = React.useState<string>('');
     const [searchSuggestions, setSearchSuggestions] = React.useState<Word[]>([]);
     const [randomWord, setRandomWord] = React.useState<Word | null>(null);
 
     useEffect(() => {
-        if (initFinished) {
+        if (initFinished && finishedLoadingSettings) {
             SplashScreen.hide();
         }
-    }, [initFinished]);
+    }, [initFinished, finishedLoadingSettings]);
 
     const querySubmitHandler = async (query: string) => {
         try {

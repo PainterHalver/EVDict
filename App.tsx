@@ -13,7 +13,7 @@ import History from './src/screens/History';
 import Bookmark from './src/screens/Bookmark';
 import CategoryScreen from './src/screens/Bookmark/CategoryScreen';
 import Settings from './src/screens/Settings';
-import SplashScreen from './src/screens/SplashScreen';
+import {SettingsProvider} from './src/contexts/SettingsContext';
 
 export type RootStackParamList = {
     Home: undefined;
@@ -31,55 +31,57 @@ function App(): JSX.Element {
     return (
         <SafeAreaProvider>
             <DatabaseProvider>
-                <LoadingModalProvider>
-                    <NavigationContainer>
-                        <Stack.Navigator screenOptions={{headerShown: false}}>
-                            <Stack.Screen name="Home" component={Home} />
-                            <Stack.Screen
-                                name="WordDetail"
-                                component={WordDetail}
-                                options={{
-                                    ...TransitionPresets.SlideFromRightIOS,
-                                }}
-                            />
-                            <Stack.Screen
-                                name="TranslateText"
-                                component={TranslateText}
-                                options={{
-                                    ...TransitionPresets.SlideFromRightIOS,
-                                }}
-                            />
-                            <Stack.Screen
-                                name="History"
-                                component={History}
-                                options={{
-                                    ...TransitionPresets.SlideFromRightIOS,
-                                }}
-                            />
-                            <Stack.Screen
-                                name="YourWord"
-                                component={Bookmark}
-                                options={{
-                                    ...TransitionPresets.SlideFromRightIOS,
-                                }}
-                            />
-                            <Stack.Screen
-                                name="CategoryScreen"
-                                component={CategoryScreen}
-                                options={{
-                                    ...TransitionPresets.SlideFromRightIOS,
-                                }}
-                            />
-                            <Stack.Screen
-                                name="Settings"
-                                component={Settings}
-                                options={{
-                                    ...TransitionPresets.SlideFromRightIOS,
-                                }}
-                            />
-                        </Stack.Navigator>
-                    </NavigationContainer>
-                </LoadingModalProvider>
+                <SettingsProvider>
+                    <LoadingModalProvider>
+                        <NavigationContainer>
+                            <Stack.Navigator screenOptions={{headerShown: false}}>
+                                <Stack.Screen name="Home" component={Home} />
+                                <Stack.Screen
+                                    name="WordDetail"
+                                    component={WordDetail}
+                                    options={{
+                                        ...TransitionPresets.SlideFromRightIOS,
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="TranslateText"
+                                    component={TranslateText}
+                                    options={{
+                                        ...TransitionPresets.SlideFromRightIOS,
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="History"
+                                    component={History}
+                                    options={{
+                                        ...TransitionPresets.SlideFromRightIOS,
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="YourWord"
+                                    component={Bookmark}
+                                    options={{
+                                        ...TransitionPresets.SlideFromRightIOS,
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="CategoryScreen"
+                                    component={CategoryScreen}
+                                    options={{
+                                        ...TransitionPresets.SlideFromRightIOS,
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="Settings"
+                                    component={Settings}
+                                    options={{
+                                        ...TransitionPresets.SlideFromRightIOS,
+                                    }}
+                                />
+                            </Stack.Navigator>
+                        </NavigationContainer>
+                    </LoadingModalProvider>
+                </SettingsProvider>
             </DatabaseProvider>
         </SafeAreaProvider>
     );

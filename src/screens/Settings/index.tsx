@@ -14,17 +14,15 @@ import IoIcon from 'react-native-vector-icons/Ionicons';
 import {RootStackParamList} from '../../../App';
 import {COLORS} from '../../constants';
 import CheckBox from '@react-native-community/checkbox';
+import {Settings as SettingsType, useSettings} from '../../contexts/SettingsContext';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 type Props = StackScreenProps<RootStackParamList, 'Settings'>;
 
-const TOGGLE_SETTINGS = {
-    auto_pronunciation: ['Tự động phát âm từ', false],
-    test: ['Tét', true],
-};
-
 const Settings = ({navigation, route}: Props) => {
+    const {settings, updateSettings} = useSettings();
+
     return (
         <View style={styles.containerWrapper}>
             <StatusBar translucent barStyle={'light-content'} backgroundColor={'transparent'} animated={true} />
@@ -59,12 +57,16 @@ const Settings = ({navigation, route}: Props) => {
 
                 <View style={styles.bodyContainer}>
                     <View style={styles.settingsContainer}>
-                        {Object.keys(TOGGLE_SETTINGS).map((key, index) => {
+                        {Object.keys(settings).map((key, index) => {
                             const [isSelected, setIsSelected] = useState<boolean>(
-                                Object.values(TOGGLE_SETTINGS)[index][1] as boolean,
+                                Object.values(settings)[index].value as boolean,
                             );
                             const toggleSelection = () => {
                                 setIsSelected(!isSelected);
+                                updateSettings({
+                                    ...settings,
+                                    [key]: {...settings[key as keyof SettingsType], value: !isSelected},
+                                });
                             };
 
                             return (
@@ -75,12 +77,12 @@ const Settings = ({navigation, route}: Props) => {
                                                 styles.settingContent,
                                                 {
                                                     borderBottomWidth:
-                                                        index === Object.keys(TOGGLE_SETTINGS).length - 1 ? 0 : 0.7,
+                                                        index === Object.keys(settings).length - 1 ? 0 : 0.7,
                                                 },
                                             ]}>
                                             <CheckBox value={isSelected} onValueChange={toggleSelection} />
                                             <Text style={styles.settingText}>
-                                                {Object.values(TOGGLE_SETTINGS)[index][0]}
+                                                {Object.values(settings)[index].label}
                                             </Text>
                                         </View>
                                     </View>
