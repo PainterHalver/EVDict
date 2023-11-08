@@ -24,6 +24,8 @@ import {useDatabase} from '../../contexts/DatabaseContext';
 import {useLoadingModal} from '../../contexts/LoadingModalContext';
 import {Word} from '../../types';
 import Tts from 'react-native-tts';
+import {useSettings} from '../../contexts/SettingsContext';
+import {speak} from '../../utils/helpers';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 
@@ -36,17 +38,7 @@ const History = ({navigation, route}: Props) => {
     const [history, setHistory] = React.useState<Word[]>([]);
     const [filteredHistory, setFilteredHistory] = React.useState<Word[]>([]);
 
-    const speak = async (text: string) => {
-        try {
-            if (!text) return;
-            await Tts.stop();
-            await Tts.setDefaultVoice('en-GB-language');
-            Tts.speak(text);
-        } catch (error) {
-            console.log(error);
-            ToastAndroid.show('Đã có lỗi xảy ra, xin vui lòng thử lại sau', ToastAndroid.LONG);
-        }
-    };
+    const {defaultPronunciation} = useSettings();
 
     useEffect(() => {
         (async () => {
@@ -164,7 +156,7 @@ const History = ({navigation, route}: Props) => {
                                             <TouchableHighlight
                                                 hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
                                                 underlayColor={COLORS.BACKGROUND_PRIMARY_DARK}
-                                                onPress={() => speak(word.word)}
+                                                onPress={() => speak(word.word, defaultPronunciation)}
                                                 style={{
                                                     backgroundColor: COLORS.BACKGROUND_PRIMARY,
                                                     borderRadius: 20,

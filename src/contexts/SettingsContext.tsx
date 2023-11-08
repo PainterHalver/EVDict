@@ -1,7 +1,7 @@
 import {createContext, useContext, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type Settings = {
+export type BooleanSettings = {
     shouldAutoPronounce: {
         value: boolean;
         label: string;
@@ -9,12 +9,14 @@ export type Settings = {
 };
 
 type SettingsContextType = {
-    settings: Settings;
+    booleanSettings: BooleanSettings;
+    defaultPronunciation: 'UK' | 'US';
     finishedLoadingSettings: boolean;
-    updateSettings: (newSettings: Settings) => Promise<void>;
+    updateBooleanSettings: (newSettings: BooleanSettings) => Promise<void>;
+    setDefaultPronunciation: (pronunciation: 'UK' | 'US') => void;
 };
 
-const DEFAULT_SETTINGS: Settings = {
+const DEFAULT_BOOLEAN_SETTINGS: BooleanSettings = {
     shouldAutoPronounce: {
         value: false,
         label: 'Tự động phát âm từ',
@@ -22,16 +24,19 @@ const DEFAULT_SETTINGS: Settings = {
 };
 
 const INITIAL_STATE: SettingsContextType = {
-    settings: DEFAULT_SETTINGS,
+    booleanSettings: DEFAULT_BOOLEAN_SETTINGS,
+    defaultPronunciation: 'UK',
     finishedLoadingSettings: false,
-    updateSettings: () => Promise.resolve(),
+    updateBooleanSettings: () => Promise.resolve(),
+    setDefaultPronunciation: () => Promise.resolve(),
 };
 
 const SettingsContext = createContext<SettingsContextType>(INITIAL_STATE);
 
 export const SettingsProvider = ({children}: any) => {
-    const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
+    const [settings, setSettings] = useState<BooleanSettings>(DEFAULT_BOOLEAN_SETTINGS);
     const [finishedLoadingSettings, setFinishedLoadingSettings] = useState<boolean>(false);
+    const [defaultPronunciation, setDefaultPronunciation] = useState<'UK' | 'US'>('UK');
 
     useEffect(() => {
         // Load nếu đã lưu persistent trong AsyncStorage, còn không dùng default
@@ -50,7 +55,7 @@ export const SettingsProvider = ({children}: any) => {
         loadSettings();
     }, []);
 
-    const updateSettings = async (newSettings: Settings) => {
+    const updateSettings = async (newSettings: BooleanSettings) => {
         try {
             setSettings(newSettings);
             await AsyncStorage.setItem('settings', JSON.stringify(newSettings));
@@ -62,9 +67,11 @@ export const SettingsProvider = ({children}: any) => {
     return (
         <SettingsContext.Provider
             value={{
-                settings,
+                booleanSettings: settings,
+                defaultPronunciation,
                 finishedLoadingSettings,
-                updateSettings,
+                updateBooleanSettings: updateSettings,
+                setDefaultPronunciation,
             }}>
             {children}
         </SettingsContext.Provider>

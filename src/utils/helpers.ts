@@ -1,5 +1,7 @@
+import Tts from 'react-native-tts';
 import {Word} from '../types';
 import {Buffer} from 'buffer';
+import {ToastAndroid} from 'react-native';
 
 /**
  * Giải nén html từ db
@@ -38,4 +40,19 @@ export const decodeAv = (rows: Word[]) => {
         row.av = new Buffer(row.av, 'base64').toString('utf8');
         row.av = populateHtml(row.av);
     });
+};
+
+/**
+ * Phát âm từ
+ */
+export const speak = async (text: string, lang: 'US' | 'UK') => {
+    try {
+        if (!text) return;
+        await Tts.stop();
+        await Tts.setDefaultVoice(lang === 'UK' ? 'en-GB-language' : 'en-US-language');
+        Tts.speak(text);
+    } catch (error) {
+        console.log(error);
+        ToastAndroid.show('Đã có lỗi xảy ra, xin vui lòng thử lại sau', ToastAndroid.LONG);
+    }
 };

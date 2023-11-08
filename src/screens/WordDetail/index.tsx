@@ -42,7 +42,7 @@ const screenWidth = Dimensions.get('window').width;
 
 const WordDetail = ({navigation, route}: Props) => {
     const {getWord, addHistoryWord, getCategories, getSelectedCategoryIds} = useDatabase();
-    const {settings} = useSettings();
+    const {booleanSettings: settings} = useSettings();
     const word = route.params?.word;
     const [categories, setCategories] = React.useState<Category[]>([]);
     const [showErrorReportModal, setShowErrorReportModal] = React.useState<boolean>(false);
