@@ -13,7 +13,7 @@ const SearchSuggestion = ({searchSuggestions}: Props) => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
     return (
-        <ScrollView style={styles.container} keyboardShouldPersistTaps="always">
+        <ScrollView style={styles.container} keyboardShouldPersistTaps="always" overScrollMode="never">
             {searchSuggestions.length > 0 &&
                 searchSuggestions.map((item, index) => {
                     return (

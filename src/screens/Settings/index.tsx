@@ -15,6 +15,9 @@ import {RootStackParamList} from '../../../App';
 import {COLORS} from '../../constants';
 import CheckBox from '@react-native-community/checkbox';
 import {BooleanSettings as SettingsType, useSettings} from '../../contexts/SettingsContext';
+import ReportModal from './ReportModal';
+import ContactModal from './ContactModal';
+import AboutUsModal from './AboutUsModal';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 
@@ -22,6 +25,9 @@ type Props = StackScreenProps<RootStackParamList, 'Settings'>;
 
 const Settings = ({navigation, route}: Props) => {
     const {booleanSettings, updateBooleanSettings, defaultPronunciation, setDefaultPronunciation} = useSettings();
+    const [showReportModal, setShowReportModal] = useState<boolean>(false);
+    const [showContactModal, setShowContactModal] = useState<boolean>(false);
+    const [showAboutUSModal, setShowAboutUSModal] = useState<boolean>(false);
 
     return (
         <View style={styles.containerWrapper}>
@@ -120,21 +126,21 @@ const Settings = ({navigation, route}: Props) => {
                     </View>
 
                     <View style={styles.settingsContainer}>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback onPress={() => setShowReportModal(true)}>
                             <View style={styles.settingContainer}>
                                 <View style={[styles.settingContent, {borderBottomWidth: 0.7}]}>
                                     <Text style={styles.settingText}>Báo lỗi hoặc gợi ý</Text>
                                 </View>
                             </View>
                         </TouchableNativeFeedback>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback onPress={() => setShowContactModal(true)}>
                             <View style={styles.settingContainer}>
                                 <View style={[styles.settingContent, {borderBottomWidth: 0.7}]}>
                                     <Text style={styles.settingText}>Liên hệ</Text>
                                 </View>
                             </View>
                         </TouchableNativeFeedback>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback onPress={() => setShowAboutUSModal(true)}>
                             <View style={styles.settingContainer}>
                                 <View style={[styles.settingContent]}>
                                     <Text style={styles.settingText}>Về chúng tôi</Text>
@@ -144,6 +150,27 @@ const Settings = ({navigation, route}: Props) => {
                     </View>
                 </View>
             </View>
+
+            <ReportModal
+                visible={showReportModal}
+                onDismiss={() => {
+                    setShowReportModal(false);
+                }}
+            />
+
+            <ContactModal
+                visible={showContactModal}
+                onDismiss={() => {
+                    setShowContactModal(false);
+                }}
+            />
+
+            <AboutUsModal
+                visible={showAboutUSModal}
+                onDismiss={() => {
+                    setShowAboutUSModal(false);
+                }}
+            />
         </View>
     );
 };

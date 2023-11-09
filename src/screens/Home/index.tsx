@@ -253,7 +253,6 @@ const styles = StyleSheet.create({
     },
     bodyContainer: {
         flex: 1,
-        // backgroundColor: '#123654',
         paddingVertical: 10,
     },
     function: {

@@ -140,7 +140,7 @@ const TranslateText = ({navigation, route}: Props) => {
                     </View>
                 </View>
 
-                <ScrollView contentContainerStyle={styles.bodyContainer}>
+                <ScrollView contentContainerStyle={styles.bodyContainer} overScrollMode="never">
                     <Shadow
                         sides={{bottom: true, top: false, end: false, start: false}}
                         style={{
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     bodyContainer: {
-        flex: 1,
+        flexGrow: 1,
         paddingVertical: 10,
         paddingHorizontal: 10,
         gap: 7,

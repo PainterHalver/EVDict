@@ -210,9 +210,13 @@ export const DatabaseProvider = ({children}: any) => {
             const total = rs[0].rows.raw()[0].count;
 
             // Lấy một từ bất kỳ dùng ngày hôm nay làm seed
+            // https://stackoverflow.com/questions/6040515/how-do-i-get-month-and-date-of-javascript-in-2-digit-format
             const date = new Date();
-            const seed = date.getDate() + date.getMonth() + date.getFullYear();
-            const random = Math.floor((seed * 133773) % total); // TODO: Đảm bảo cover hết từ
+            const datePadded = ('0' + date.getDate()).slice(-2);
+            const monthPadded = ('0' + (date.getMonth() + 1)).slice(-2); // getMonth bắt đầu từ 0 ??
+            const seed = Number(`${date.getFullYear()}${monthPadded}${datePadded}`);
+            console.log('SEED: ', seed);
+            const random = Math.floor((seed * 133773) % total);
 
             const rs2 = await db.executeSql(`SELECT * FROM av LIMIT 1 OFFSET ?`, [random]);
             const word = rs2[0].rows.raw()[0];
