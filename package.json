@@ -20,6 +20,7 @@
         "react-native-autoheight-webview": "^1.6.5",
         "react-native-base64": "^0.2.1",
         "react-native-gesture-handler": "^2.13.4",
+        "react-native-image-crop-picker": "^0.40.1",
         "react-native-linear-gradient": "^2.6.2",
         "react-native-reanimated": "^3.5.4",
         "react-native-safe-area-context": "^4.7.4",
@@ -30,7 +31,8 @@
         "react-native-svg": "^13.14.0",
         "react-native-tts": "^4.1.0",
         "react-native-vector-icons": "^10.0.0",
-        "react-native-webview": "^13.6.2"
+        "react-native-webview": "^13.6.2",
+        "rn-text-detector": "^0.0.8"
     },
     "devDependencies": {
         "@babel/core": "^7.20.0",

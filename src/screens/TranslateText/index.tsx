@@ -26,9 +26,12 @@ import {Shadow} from 'react-native-shadow-2';
 import Card from '../../component/Card';
 import Tts from 'react-native-tts';
 import Clipboard from '@react-native-clipboard/clipboard';
+import ImagePicker from 'react-native-image-crop-picker';
 import {useLoadingModal} from '../../contexts/LoadingModalContext';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
+// @ts-ignore
+import RNTextDetector from 'rn-text-detector';
 
 type Props = StackScreenProps<RootStackParamList, 'TranslateText'>;
 
@@ -106,6 +109,18 @@ const TranslateText = ({navigation, route}: Props) => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleTranslateImage = async () => {
+        const image = await ImagePicker.openCamera({
+            width: 300,
+            height: 400,
+            cropping: true,
+            freeStyleCropEnabled: true,
+        });
+        // const textResult = await TextRecognition.recognize(image.path);
+        const textResult = await RNTextDetector.detectFromUri(image.path);
+        setText(textResult.map((item: any) => item.text).join(' '));
     };
 
     return (
@@ -233,6 +248,12 @@ const TranslateText = ({navigation, route}: Props) => {
                             underlayColor={COLORS.BACKGROUND_PRIMARY_DARK}
                             style={styles.translateButton}>
                             <Text style={{fontSize: 16, color: COLORS.TEXT_WHITE, fontWeight: '500'}}>Việt - Anh</Text>
+                        </TouchableHighlight>
+                        <TouchableHighlight
+                            onPress={handleTranslateImage}
+                            underlayColor={COLORS.BACKGROUND_PRIMARY_DARK}
+                            style={styles.translateButton}>
+                            <Text style={{fontSize: 16, color: COLORS.TEXT_WHITE, fontWeight: '500'}}>OCR</Text>
                         </TouchableHighlight>
                     </View>
 
