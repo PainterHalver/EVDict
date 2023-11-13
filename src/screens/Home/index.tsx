@@ -226,7 +226,7 @@ const Home = ({navigation}: Props) => {
                     </View>
 
                     <View style={{marginTop: 'auto', alignItems: 'center', marginBottom: 15}}>
-                        <Text style={{fontSize: 15, color: COLORS.TEXT_GRAY}}>v0.1.0</Text>
+                        <Text style={{fontSize: 15, color: COLORS.TEXT_GRAY}}>v0.2.0</Text>
                     </View>
 
                     <SearchSuggestion searchSuggestions={searchSuggestions} />
