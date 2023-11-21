@@ -54,7 +54,7 @@ export const DatabaseProvider = ({children}: any) => {
             // Bảng lịch sử
             await db.executeSql(
                 `CREATE TABLE IF NOT EXISTS word_history (
-                    word TEXT PRIMARY KEY NOT NULL,
+                    word VARCHAR(150) PRIMARY KEY NOT NULL,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )`,
             );
@@ -65,7 +65,8 @@ export const DatabaseProvider = ({children}: any) => {
                 `CREATE TABLE IF NOT EXISTS categories (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL,
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )`,
             );
             console.log("CREATED TABLE 'categories'");
@@ -76,7 +77,7 @@ export const DatabaseProvider = ({children}: any) => {
             // Bảng nối từ vựng và category
             await db.executeSql(
                 `CREATE TABLE IF NOT EXISTS word_categories (
-                    word TEXT NOT NULL,
+                    word VARCHAR(150) NOT NULL,
                     category_id INTEGER NOT NULL,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (category_id) REFERENCES categories (id)
