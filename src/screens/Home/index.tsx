@@ -51,7 +51,8 @@ const Home = ({navigation}: Props) => {
             if (result) {
                 navigation.navigate('WordDetail', {word: result});
             } else {
-                // TODO: Không tìm thấy từ thì chuyển sang dùng màn google translate
+                // Không tìm thấy từ thì chuyển sang dùng màn google translate
+                navigation.navigate('TranslateText', {text: query});
             }
         } catch (error) {
             console.log('ERROR: ', error);
