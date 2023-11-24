@@ -1,7 +1,7 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import SQLite from 'react-native-sqlite-storage';
 import {Buffer} from 'buffer';
-import {Category, Word} from '../types';
+import {Category, Statistics, Word} from '../types';
 import {decodeAv, filterBadChars, populateHtml} from '../utils/helpers';
 
 export type DatabaseContextType = {
@@ -20,6 +20,7 @@ export type DatabaseContextType = {
     addWordToCategories: (word: string, categoryIds: number[]) => Promise<void>;
     deleteWordsFromCategory: (word: string[], categoryId: number) => Promise<void>;
     getTodaysWord: () => Promise<Word | undefined>;
+    getStatistics: () => Promise<Statistics>;
 };
 
 // SQLite.DEBUG(true);
@@ -41,6 +42,7 @@ const DatabaseContext = createContext<DatabaseContextType>({
     addWordToCategories: 0 as any,
     deleteWordsFromCategory: 0 as any,
     getTodaysWord: 0 as any,
+    getStatistics: 0 as any,
 });
 
 export const DatabaseProvider = ({children}: any) => {
@@ -329,6 +331,35 @@ export const DatabaseProvider = ({children}: any) => {
         }
     };
 
+    const getStatistics = async (): Promise<Statistics> => {
+        const stats: Statistics = {
+            categoryCount: 0,
+            wordSearchedCount: 0,
+            savedWordCount: 0,
+        };
+
+        try {
+            if (!db) throw new Error('App database is not ready');
+
+            // Lấy số lượng category
+            const rs = await db.executeSql(`SELECT COUNT(*) as count FROM categories`);
+            stats.categoryCount = rs[0].rows.raw()[0].count;
+
+            // Lấy số lượng từ đã tìm kiếm
+            const rs2 = await db.executeSql(`SELECT COUNT(*) as count FROM word_history`);
+            stats.wordSearchedCount = rs2[0].rows.raw()[0].count;
+
+            // Lấy số lượng từ đã lưu unique
+            const rs3 = await db.executeSql(`SELECT COUNT(DISTINCT word) as count FROM word_categories`);
+            stats.savedWordCount = rs3[0].rows.raw()[0].count;
+
+            return stats;
+        } catch (error) {
+            console.log('GET STATISTICS:', error);
+            return stats;
+        }
+    };
+
     useEffect(() => {
         (async () => {
             try {
@@ -371,6 +402,7 @@ export const DatabaseProvider = ({children}: any) => {
                 addWordToCategories,
                 deleteWordsFromCategory,
                 getTodaysWord,
+                getStatistics,
             }}>
             {children}
         </DatabaseContext.Provider>

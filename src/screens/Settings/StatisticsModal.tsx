@@ -1,31 +1,37 @@
 import {View, TextInput, TouchableHighlight, Text, StyleSheet, ToastAndroid, Linking} from 'react-native';
 import MyModal from '../../component/MyModal';
 import {COLORS} from '../../constants';
-import {Word} from '../../types';
-import {useState} from 'react';
+import {Statistics, Word} from '../../types';
+import {useEffect, useState} from 'react';
+import {useDatabase} from '../../contexts/DatabaseContext';
 
 interface Props {
     visible: boolean;
     onDismiss: () => void;
 }
 
-const ContactModal = ({visible, onDismiss}: Props) => {
+const StatisticsModal = ({visible, onDismiss}: Props) => {
+    const [stats, setStats] = useState<Statistics | null>();
+    const {getStatistics} = useDatabase();
+
+    useEffect(() => {
+        (async () => {
+            setStats(await getStatistics());
+        })();
+    }, [visible]);
+
     return (
         <MyModal visible={visible} onDismiss={onDismiss}>
             <View style={styles.modal}>
-                <Text style={{color: COLORS.TEXT_BLACK, fontSize: 18, fontWeight: '500'}}>Liên hệ</Text>
+                <Text style={{color: COLORS.TEXT_BLACK, fontSize: 18, fontWeight: '500'}}>Thống kê</Text>
 
-                <Text style={{color: COLORS.TEXT_BLACK, fontSize: 16}}>Email hỗ trợ: support@evdict.local</Text>
-                <Text style={{color: COLORS.TEXT_BLACK, fontSize: 16}}>Số điện thoại: 19001001</Text>
                 <Text style={{color: COLORS.TEXT_BLACK, fontSize: 16}}>
-                    Github:{' '}
-                    <Text
-                        style={{color: '#0000FF', fontSize: 16, textDecorationLine: 'underline'}}
-                        onPress={() => Linking.openURL('https://github.com/PainterHalver/EVDict')}>
-                        PainterHalver/EVDict
-                    </Text>
-                    <Text />
+                    Tổng số từ đã tra: {stats?.wordSearchedCount}
                 </Text>
+                <Text style={{color: COLORS.TEXT_BLACK, fontSize: 16}}>
+                    Số lượng danh sách từ vựng: {stats?.categoryCount}
+                </Text>
+                <Text style={{color: COLORS.TEXT_BLACK, fontSize: 16}}>Tổng số từ đã lưu: {stats?.savedWordCount}</Text>
 
                 <View
                     style={{
@@ -63,4 +69,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ContactModal;
+export default StatisticsModal;

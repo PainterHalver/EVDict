@@ -1,4 +1,4 @@
-import {View, TextInput, TouchableHighlight, Text, StyleSheet, ToastAndroid} from 'react-native';
+import {View, TextInput, TouchableHighlight, Text, StyleSheet, ToastAndroid, Linking} from 'react-native';
 import MyModal from '../../component/MyModal';
 import {COLORS} from '../../constants';
 import {Word} from '../../types';
@@ -23,6 +23,15 @@ const AboutUsModal = ({visible, onDismiss}: Props) => {
                 <Text style={{color: COLORS.TEXT_BLACK, fontSize: CONTENT_FONT_SIZE}}>Mã môn học: INT3138_1</Text>
                 <Text style={{color: COLORS.TEXT_BLACK, fontSize: CONTENT_FONT_SIZE}}>Họ và tên: Đào Đức Hiệp</Text>
                 <Text style={{color: COLORS.TEXT_BLACK, fontSize: CONTENT_FONT_SIZE}}>Mã sinh viên: 20020259</Text>
+                <Text style={{color: COLORS.TEXT_BLACK, fontSize: 16}}>
+                    Github:{' '}
+                    <Text
+                        style={{color: '#0000FF', fontSize: 16, textDecorationLine: 'underline'}}
+                        onPress={() => Linking.openURL('https://github.com/PainterHalver/EVDict')}>
+                        PainterHalver/EVDict
+                    </Text>
+                    <Text />
+                </Text>
 
                 <View
                     style={{

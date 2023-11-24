@@ -152,64 +152,80 @@ const CategoryScreen = ({navigation, route}: Props) => {
                             elevation: 1,
                         }}>
                         <ScrollView showsVerticalScrollIndicator={false}>
-                            {filteredWords.map((word, index) => {
-                                const isSelected = selectedWords.includes(word);
-                                const toggleSelection = () => {
-                                    if (isSelected) {
-                                        setSelectedWords(selectedWords.filter(item => item.word !== word.word));
-                                    } else {
-                                        setSelectedWords([...selectedWords, word]);
-                                    }
-                                };
+                            {filteredWords.length > 0 ? (
+                                filteredWords.map((word, index) => {
+                                    const isSelected = selectedWords.includes(word);
+                                    const toggleSelection = () => {
+                                        if (isSelected) {
+                                            setSelectedWords(selectedWords.filter(item => item.word !== word.word));
+                                        } else {
+                                            setSelectedWords([...selectedWords, word]);
+                                        }
+                                    };
 
-                                return (
-                                    <TouchableNativeFeedback
-                                        key={word.word}
-                                        onPress={() => {
-                                            navigation.navigate('WordDetail', {word: word});
-                                        }}>
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                paddingVertical: 10,
-                                                paddingRight: 15,
-                                                paddingLeft: 7,
-                                                gap: 7,
-                                                alignItems: 'center',
-                                                borderBottomColor: COLORS.BORDER_GRAY,
-                                                borderBottomWidth: index === words.length - 1 ? 0 : 0.7,
+                                    return (
+                                        <TouchableNativeFeedback
+                                            key={word.word}
+                                            onPress={() => {
+                                                navigation.navigate('WordDetail', {word: word});
                                             }}>
-                                            <CheckBox
-                                                value={isSelected}
-                                                onValueChange={toggleSelection}
-                                                hitSlop={{bottom: 20, left: 20, top: 20, right: 20}}
-                                            />
-                                            <View style={{marginRight: 'auto'}}>
-                                                <Text style={{fontSize: 18, color: COLORS.TEXT_BLACK}}>
-                                                    {word.word.length > 30 ? word.word.slice(0, 30) + '...' : word.word}
-                                                </Text>
-                                                <Text style={{fontSize: 15, color: COLORS.TEXT_GRAY}}>
-                                                    {word.mean.length > 36 ? word.mean.slice(0, 36) + '...' : word.mean}
-                                                </Text>
-                                            </View>
-                                            <TouchableHighlight
-                                                hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
-                                                underlayColor={COLORS.BACKGROUND_PRIMARY_DARK}
-                                                onPress={() => speak(word.word, defaultPronunciation)}
+                                            <View
                                                 style={{
-                                                    backgroundColor: COLORS.BACKGROUND_PRIMARY,
-                                                    borderRadius: 20,
-                                                    height: 25,
-                                                    width: 25,
+                                                    flexDirection: 'row',
+                                                    paddingVertical: 10,
+                                                    paddingRight: 15,
+                                                    paddingLeft: 7,
+                                                    gap: 7,
                                                     alignItems: 'center',
-                                                    justifyContent: 'center',
+                                                    borderBottomColor: COLORS.BORDER_GRAY,
+                                                    borderBottomWidth: index === words.length - 1 ? 0 : 0.7,
                                                 }}>
-                                                <IoIcon name="volume-high" size={15} color={COLORS.TEXT_WHITE} />
-                                            </TouchableHighlight>
-                                        </View>
-                                    </TouchableNativeFeedback>
-                                );
-                            })}
+                                                <CheckBox
+                                                    value={isSelected}
+                                                    onValueChange={toggleSelection}
+                                                    hitSlop={{bottom: 20, left: 20, top: 20, right: 20}}
+                                                />
+                                                <View style={{marginRight: 'auto'}}>
+                                                    <Text style={{fontSize: 18, color: COLORS.TEXT_BLACK}}>
+                                                        {word.word.length > 30
+                                                            ? word.word.slice(0, 30) + '...'
+                                                            : word.word}
+                                                    </Text>
+                                                    <Text style={{fontSize: 15, color: COLORS.TEXT_GRAY}}>
+                                                        {word.mean.length > 36
+                                                            ? word.mean.slice(0, 36) + '...'
+                                                            : word.mean}
+                                                    </Text>
+                                                </View>
+                                                <TouchableHighlight
+                                                    hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+                                                    underlayColor={COLORS.BACKGROUND_PRIMARY_DARK}
+                                                    onPress={() => speak(word.word, defaultPronunciation)}
+                                                    style={{
+                                                        backgroundColor: COLORS.BACKGROUND_PRIMARY,
+                                                        borderRadius: 20,
+                                                        height: 25,
+                                                        width: 25,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    <IoIcon name="volume-high" size={15} color={COLORS.TEXT_WHITE} />
+                                                </TouchableHighlight>
+                                            </View>
+                                        </TouchableNativeFeedback>
+                                    );
+                                })
+                            ) : (
+                                <Text
+                                    style={{
+                                        fontSize: 16,
+                                        color: COLORS.TEXT_BLACK,
+                                        paddingVertical: 10,
+                                        paddingLeft: 15,
+                                    }}>
+                                    Không tìm thấy từ vựng nào
+                                </Text>
+                            )}
                         </ScrollView>
                     </View>
 

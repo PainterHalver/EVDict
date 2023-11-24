@@ -16,7 +16,7 @@ import {COLORS} from '../../constants';
 import CheckBox from '@react-native-community/checkbox';
 import {BooleanSettings as SettingsType, useSettings} from '../../contexts/SettingsContext';
 import ReportModal from './ReportModal';
-import ContactModal from './ContactModal';
+import StatisticsModal from './StatisticsModal';
 import AboutUsModal from './AboutUsModal';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
@@ -136,7 +136,7 @@ const Settings = ({navigation, route}: Props) => {
                         <TouchableNativeFeedback onPress={() => setShowContactModal(true)}>
                             <View style={styles.settingContainer}>
                                 <View style={[styles.settingContent, {borderBottomWidth: 0.7}]}>
-                                    <Text style={styles.settingText}>Liên hệ</Text>
+                                    <Text style={styles.settingText}>Thống kê</Text>
                                 </View>
                             </View>
                         </TouchableNativeFeedback>
@@ -158,7 +158,7 @@ const Settings = ({navigation, route}: Props) => {
                 }}
             />
 
-            <ContactModal
+            <StatisticsModal
                 visible={showContactModal}
                 onDismiss={() => {
                     setShowContactModal(false);
