@@ -31,7 +31,7 @@ import {useLoadingModal} from '../../contexts/LoadingModalContext';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 // @ts-ignore
-import RNTextDetector from 'rn-text-detector';
+import TextRecognition from '@react-native-ml-kit/text-recognition';
 
 type Props = StackScreenProps<RootStackParamList, 'TranslateText'>;
 
@@ -112,15 +112,25 @@ const TranslateText = ({navigation, route}: Props) => {
     };
 
     const handleTranslateImage = async () => {
-        const image = await ImagePicker.openCamera({
-            width: 300,
-            height: 400,
-            cropping: true,
-            freeStyleCropEnabled: true,
-        });
-        // const textResult = await TextRecognition.recognize(image.path);
-        const textResult = await RNTextDetector.detectFromUri(image.path);
-        setText(textResult.map((item: any) => item.text).join(' '));
+        try {
+            const image = await ImagePicker.openCamera({
+                cropping: true,
+                freeStyleCropEnabled: true,
+            });
+
+            setLoading(true);
+            const textResult = await TextRecognition.recognize(image.path);
+            let result = '';
+            for (const block of textResult.blocks) {
+                result += block.text + ' ';
+            }
+            setText(result);
+        } catch (error) {
+            console.log('ERROR: ', error);
+            ToastAndroid.show('Đã có lỗi xảy ra, vui lòng thử lại', ToastAndroid.LONG);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
