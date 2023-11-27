@@ -165,7 +165,10 @@ const TranslateText = ({navigation, route}: Props) => {
                     </View>
                 </View>
 
-                <ScrollView contentContainerStyle={styles.bodyContainer} overScrollMode="never">
+                <ScrollView
+                    contentContainerStyle={styles.bodyContainer}
+                    overScrollMode="never"
+                    keyboardShouldPersistTaps="always">
                     <Shadow
                         sides={{bottom: true, top: false, end: false, start: false}}
                         style={{

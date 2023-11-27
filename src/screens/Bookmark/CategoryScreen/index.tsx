@@ -151,7 +151,7 @@ const CategoryScreen = ({navigation, route}: Props) => {
                             backgroundColor: COLORS.BACKGROUND_WHITE,
                             elevation: 1,
                         }}>
-                        <ScrollView showsVerticalScrollIndicator={false}>
+                        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always">
                             {filteredWords.length > 0 ? (
                                 filteredWords.map((word, index) => {
                                     const isSelected = selectedWords.includes(word);

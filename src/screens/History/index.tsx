@@ -128,7 +128,7 @@ const History = ({navigation, route}: Props) => {
                             backgroundColor: COLORS.BACKGROUND_WHITE,
                             elevation: 1,
                         }}>
-                        <ScrollView showsVerticalScrollIndicator={false}>
+                        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always">
                             {filteredHistory.length > 0 ? (
                                 filteredHistory.map((word, index) => {
                                     return (
