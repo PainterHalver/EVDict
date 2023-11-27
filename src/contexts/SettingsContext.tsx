@@ -6,6 +6,10 @@ export type BooleanSettings = {
         value: boolean;
         label: string;
     };
+    offlineTextTranslation: {
+        value: boolean;
+        label: string;
+    };
 };
 
 type SettingsContextType = {
@@ -20,6 +24,10 @@ const DEFAULT_BOOLEAN_SETTINGS: BooleanSettings = {
     shouldAutoPronounce: {
         value: false,
         label: 'Tự động phát âm từ',
+    },
+    offlineTextTranslation: {
+        value: false,
+        label: 'Dịch văn bản offline (Alpha)',
     },
 };
 

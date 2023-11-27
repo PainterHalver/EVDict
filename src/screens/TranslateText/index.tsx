@@ -30,8 +30,9 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {useLoadingModal} from '../../contexts/LoadingModalContext';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
-// @ts-ignore
 import TextRecognition from '@react-native-ml-kit/text-recognition';
+import MLTranslateText, {TranslateLanguage} from '@react-native-ml-kit/translate-text';
+import {useSettings} from '../../contexts/SettingsContext';
 
 type Props = StackScreenProps<RootStackParamList, 'TranslateText'>;
 
@@ -50,6 +51,7 @@ const TranslateText = ({navigation, route}: Props) => {
     const [text, setText] = React.useState<string>(route.params?.text || '');
     const [fromTo, setFromTo] = React.useState<string[]>(['vi', 'en']);
     const [result, setResult] = React.useState<string>('');
+    const {booleanSettings} = useSettings();
 
     const speakFromText = async () => {
         try {
@@ -75,6 +77,22 @@ const TranslateText = ({navigation, route}: Props) => {
         }
     };
 
+    const offlineTranslate = async (text: string, src: 'en' | 'vi', target: 'en' | 'vi') => {
+        try {
+            const result = await MLTranslateText.translate({
+                text: text,
+                sourceLanguage: src === 'en' ? TranslateLanguage.ENGLISH : TranslateLanguage.VIETNAMESE,
+                targetLanguage: target === 'en' ? TranslateLanguage.ENGLISH : TranslateLanguage.VIETNAMESE,
+            });
+            return result;
+        } catch (error) {
+            console.log('ERROR OFFLINE TRANSLATE: ', error);
+            ToastAndroid.show('Đã có lỗi xảy ra, xin vui lòng thử lại sau', ToastAndroid.LONG);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const enToVi = async () => {
         try {
             if (!text) return;
@@ -84,10 +102,13 @@ const TranslateText = ({navigation, route}: Props) => {
             const res = await fetch(url + text);
             const data = await res.json();
             setResult(data[0]);
-            setLoading(false);
         } catch (error) {
             console.log('ERROR: ', error);
-            ToastAndroid.show('Không thể kết nối tới máy chủ, vui lòng thử lại sau', ToastAndroid.LONG);
+            if (booleanSettings.offlineTextTranslation.value) {
+                setResult((await offlineTranslate(text, 'en', 'vi')) as string);
+            } else {
+                ToastAndroid.show('Không thể kết nối tới máy chủ, vui lòng thử lại sau', ToastAndroid.LONG);
+            }
         } finally {
             setLoading(false);
         }
@@ -105,7 +126,11 @@ const TranslateText = ({navigation, route}: Props) => {
             setLoading(false);
         } catch (error) {
             console.log('ERROR: ', error);
-            ToastAndroid.show('Không thể kết nối tới máy chủ, vui lòng thử lại sau', ToastAndroid.LONG);
+            if (booleanSettings.offlineTextTranslation.value) {
+                setResult((await offlineTranslate(text, 'vi', 'en')) as string);
+            } else {
+                ToastAndroid.show('Không thể kết nối tới máy chủ, vui lòng thử lại sau', ToastAndroid.LONG);
+            }
         } finally {
             setLoading(false);
         }
