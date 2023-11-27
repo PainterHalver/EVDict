@@ -18,6 +18,7 @@ import {BooleanSettings as SettingsType, useSettings} from '../../contexts/Setti
 import ReportModal from './ReportModal';
 import StatisticsModal from './StatisticsModal';
 import AboutUsModal from './AboutUsModal';
+import {triggerTranslate} from '../../utils/helpers';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 
@@ -67,7 +68,12 @@ const Settings = ({navigation, route}: Props) => {
                             const [isSelected, setIsSelected] = useState<boolean>(
                                 Object.values(booleanSettings)[index].value as boolean,
                             );
-                            const toggleSelection = () => {
+                            const toggleSelection = async () => {
+                                // Testing
+                                if (key === 'offlineTextTranslation' && !isSelected) {
+                                    triggerTranslate();
+                                }
+
                                 setIsSelected(!isSelected);
                                 updateBooleanSettings({
                                     ...booleanSettings,

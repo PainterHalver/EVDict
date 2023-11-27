@@ -2,6 +2,7 @@ import Tts from 'react-native-tts';
 import {Word} from '../types';
 import {Buffer} from 'buffer';
 import {ToastAndroid} from 'react-native';
+import TranslateText, {TranslateLanguage} from '@react-native-ml-kit/translate-text';
 
 /**
  * Giải nén html từ db
@@ -54,5 +55,22 @@ export const speak = async (text: string, lang: 'US' | 'UK') => {
     } catch (error) {
         console.log(error);
         ToastAndroid.show('Đã có lỗi xảy ra, xin vui lòng thử lại sau', ToastAndroid.LONG);
+    }
+};
+
+/**
+ * Trigger translate để tải model
+ */
+export const triggerTranslate = async () => {
+    try {
+        await TranslateText.translate({
+            text: 'test',
+            sourceLanguage: TranslateLanguage.ENGLISH,
+            targetLanguage: TranslateLanguage.VIETNAMESE,
+            downloadModelIfNeeded: true,
+        });
+    } catch (error) {
+        console.log(error);
+        ToastAndroid.show('Cần có mạng để tải model lần đầu', ToastAndroid.LONG);
     }
 };
