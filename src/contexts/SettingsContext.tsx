@@ -27,7 +27,7 @@ const DEFAULT_BOOLEAN_SETTINGS: BooleanSettings = {
     },
     offlineTextTranslation: {
         value: false,
-        label: 'Dịch văn bản offline (Alpha)',
+        label: 'Dịch văn bản offline (Test)',
     },
 };
 
