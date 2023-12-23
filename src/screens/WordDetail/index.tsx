@@ -97,8 +97,7 @@ const WordDetail = ({navigation, route}: Props) => {
                 splittedAvHtml.splice(i, 1);
                 tabs.splice(i, 1);
             }
-            // TODO: Tạm thời bỏ tab Technical để không tràn chữ xuống dòng nếu có cả 5 tab
-            // Vẫn oke hơn là lúc nào cũng bỏ :)
+            // bỏ tab Technical để không tràn chữ xuống dòng nếu có cả 5 tab
             if (tabs.length === 5) {
                 tabs.splice(2, 1);
                 splittedAvHtml.splice(2, 1);
@@ -111,11 +110,9 @@ const WordDetail = ({navigation, route}: Props) => {
     const translateX = useSharedValue(0);
 
     const onGestureEvent = useAnimatedGestureHandler({
-        // Lúc bắt đầu chạm
         onStart: (_, ctx: any) => {
             ctx.startX = translateX.value;
         },
-        // Lúc vuốt
         onActive: (event, ctx: any) => {
             const nextTranslation = ctx.startX + event.translationX;
 
@@ -125,18 +122,16 @@ const WordDetail = ({navigation, route}: Props) => {
 
             translateX.value = nextTranslation;
         },
-        // Lúc thả tay
         onEnd: event => {
             const swipeVelocity = Math.abs(event.velocityX);
 
-            // Scroll có momentum, lớn hơn 500 thì chuyển tab
             if (swipeVelocity > 500) {
                 const direction = event.velocityX > 0 ? 1 : -1;
                 const nextPage = Math.round(translateX.value / screenWidth) + direction;
                 const targetTranslateX = Math.max(Math.min(nextPage * screenWidth, 0), maxTranslateX); // clamp to bounds
 
                 translateX.value = withSpring(targetTranslateX, {
-                    overshootClamping: true, // clamp lại chứ ko bounce khi vuốt quá
+                    overshootClamping: true,
                     restSpeedThreshold: 0.1,
                     restDisplacementThreshold: 0.1,
                     damping: 20,
@@ -145,7 +140,6 @@ const WordDetail = ({navigation, route}: Props) => {
                     velocity: event.velocityX,
                 });
             } else {
-                // Scroll không có momentum (drag)
                 const snapPoint = Math.round(translateX.value / screenWidth) * screenWidth;
                 const clampedSnapPoint = Math.max(Math.min(snapPoint, 0), maxTranslateX); // clamp to bounds
 
@@ -401,7 +395,7 @@ export default WordDetail;
 const styles = StyleSheet.create({
     containerWrapper: {
         flex: 1,
-        backgroundColor: COLORS.BACKGROUND_WHITE, // match voi webview (10000IQ workaround)
+        backgroundColor: COLORS.BACKGROUND_WHITE,
     },
     container: {
         flex: 1,

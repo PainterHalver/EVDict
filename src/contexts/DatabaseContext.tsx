@@ -6,6 +6,7 @@ import {decodeAv, filterBadChars, populateHtml} from '../utils/helpers';
 
 export type DatabaseContextType = {
     db: SQLite.SQLiteDatabase | null;
+    vaDb: SQLite.SQLiteDatabase | null;
     initFinished: boolean;
     getWord: (word: string) => Promise<Word | undefined>;
     getWordsStartsWith: (word: string, limit?: number) => Promise<Word[]>;
@@ -28,6 +29,7 @@ SQLite.enablePromise(true);
 
 const DatabaseContext = createContext<DatabaseContextType>({
     db: null,
+    vaDb: null,
     initFinished: false,
     getWord: 0 as any,
     getWordsStartsWith: 0 as any,
@@ -47,6 +49,7 @@ const DatabaseContext = createContext<DatabaseContextType>({
 
 export const DatabaseProvider = ({children}: any) => {
     const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
+    const [vaDb, setVaDb] = useState<SQLite.SQLiteDatabase | null>(null);
     const [initFinished, setInitFinished] = useState(false);
 
     const createTables = async () => {
@@ -144,7 +147,7 @@ export const DatabaseProvider = ({children}: any) => {
 
             const rs = await db.executeSql(
                 `SELECT * FROM word_categories
-                LEFT JOIN av ON av.word = word_categories.word 
+                LEFT JOIN av ON av.word = word_categories.word
                 WHERE category_id = ? ORDER BY created_at LIMIT ?`,
                 [categoryId, limit],
             );
@@ -234,6 +237,7 @@ export const DatabaseProvider = ({children}: any) => {
     const getWord = async (word: string): Promise<Word | undefined> => {
         try {
             if (!db) throw new Error('Data database is not ready');
+            if (!vaDb) throw new Error('VA database is not ready');
 
             word = filterBadChars(word);
             console.log(word);
@@ -242,20 +246,40 @@ export const DatabaseProvider = ({children}: any) => {
                     tx.executeSql(
                         `SELECT * FROM av WHERE word = ? LIMIT 1`,
                         [word],
-                        (_, rs) => {
+                        async (_, rs) => {
                             if (rs.rows.length > 0) {
                                 try {
                                     const row = rs.rows.item(0);
                                     // Vì lý do nào đó khi lấy data nó lại trả về base64
                                     row.av = new Buffer(row.av, 'base64').toString('utf8');
                                     row.av = populateHtml(row.av);
-
                                     resolve(row);
                                 } catch (error) {
                                     console.log(error);
                                 }
                             } else {
-                                reject('Không có gì trả về');
+                                // reject('Không có gì trả về');
+                                await vaDb.transaction(tx => {
+                                    tx.executeSql(
+                                        `SELECT word, mean, va AS av FROM word_tbl WHERE word = ? LIMIT 1`,
+                                        [word],
+                                        (_, rs) => {
+                                            if (rs.rows.length > 0) {
+                                                try {
+                                                    const row = rs.rows.item(0);
+                                                    row.av = new Buffer(row.av, 'base64').toString('utf8');
+                                                    row.av = populateHtml(row.av);
+                                                    resolve(row);
+                                                } catch (error) {
+                                                    console.log(error);
+                                                }
+                                            } else {
+                                                reject('Không có gì trả về');
+                                            }
+                                        },
+                                        (_, error) => reject(error),
+                                    );
+                                });
                             }
                         },
                         (_, error) => reject(error),
@@ -271,13 +295,14 @@ export const DatabaseProvider = ({children}: any) => {
     const getWordsStartsWith = async (query: string, limit: number = 5): Promise<Word[]> => {
         try {
             if (!db) throw new Error('Data database is not ready');
+            if (!vaDb) throw new Error('VA database is not ready');
 
             const result = await new Promise<Word[]>(async (resolve, reject) => {
                 await db.transaction(tx => {
                     tx.executeSql(
                         `SELECT word, mean, av FROM av WHERE word LIKE ? ORDER BY word ASC LIMIT ?`,
                         [query + '%', limit],
-                        (_, rs) => {
+                        async (_, rs) => {
                             if (rs.rows.length > 0) {
                                 try {
                                     // return all rows after converting to array
@@ -288,13 +313,34 @@ export const DatabaseProvider = ({children}: any) => {
                                     console.log(error);
                                 }
                             } else {
-                                reject('Không có gì trả về');
+                                await vaDb.transaction(tx => {
+                                    tx.executeSql(
+                                        `SELECT word, mean, va AS av FROM word_tbl WHERE word LIKE ? ORDER BY word ASC LIMIT ?`,
+                                        [query + '%', limit],
+                                        (_, rs) => {
+                                            if (rs.rows.length > 0) {
+                                                try {
+                                                    // return all rows after converting to array
+                                                    const rows = rs.rows.raw();
+                                                    decodeAv(rows);
+                                                    resolve(rows);
+                                                } catch (error) {
+                                                    console.log(error);
+                                                }
+                                            } else {
+                                                reject('Không có gì trả về');
+                                            }
+                                        },
+                                        (_, error) => reject(error),
+                                    );
+                                });
                             }
                         },
                         (_, error) => reject(error),
                     );
                 });
             });
+
             return result;
         } catch (error) {
             console.log('ERROR: ', error);
@@ -307,7 +353,7 @@ export const DatabaseProvider = ({children}: any) => {
             if (!db) throw new Error('App database is not ready');
 
             const rs = await db.executeSql(`
-                SELECT * FROM word_history 
+                SELECT * FROM word_history
                 JOIN av ON av.word = word_history.word
                 ORDER BY created_at DESC LIMIT 100
             `);
@@ -369,6 +415,12 @@ export const DatabaseProvider = ({children}: any) => {
                         createFromLocation: '~av_all_v3.db',
                     }),
                 );
+                setVaDb(
+                    await SQLite.openDatabase({
+                        name: 'va.db',
+                        createFromLocation: '~va_all_v3.db',
+                    }),
+                );
             } catch (error) {
                 console.log('USE EFFECT:', error);
             }
@@ -388,6 +440,7 @@ export const DatabaseProvider = ({children}: any) => {
         <DatabaseContext.Provider
             value={{
                 db,
+                vaDb,
                 initFinished,
                 getWord,
                 getWordsStartsWith,
